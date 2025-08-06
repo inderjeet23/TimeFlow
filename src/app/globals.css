@@ -151,7 +151,7 @@
   
   /* Mobile upload area */
   .upload-area-mobile {
-    @apply border-3 border-dashed rounded-2xl p-6 sm:p-12 text-center cursor-pointer;
+    @apply border-2 border-dashed rounded-2xl p-6 sm:p-12 text-center cursor-pointer;
     @apply transition-all duration-300 hover:shadow-lg;
     @apply min-h-[200px] sm:min-h-[300px];
     @apply flex items-center justify-center;
