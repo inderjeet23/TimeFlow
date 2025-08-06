@@ -6,6 +6,7 @@ import Link from 'next/link';
 import CSVUploader from '@/components/CSVUploader';
 import InvoicePreview from '@/components/InvoicePreview';
 import InvoiceForm from '@/components/InvoiceForm';
+import MobileNavigation from '@/components/MobileNavigation';
 import { InvoiceData, TimeEntry } from '@/types';
 import { parseCSV, convertTimeEntriesToInvoiceItems, calculateTotals } from '@/lib/csv-parser';
 import { generateInvoicePDF } from '@/lib/pdf-generator';
@@ -121,19 +122,22 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center cursor-pointer" onClick={() => setStep('upload')}>
+      {/* Mobile Navigation */}
+      <MobileNavigation currentStep={step} onStepChange={setStep} />
+      
+      {/* Desktop Header */}
+      <header className="bg-white shadow-sm border-b hidden lg:block">
+        <div className="container-mobile">
+          <div className="flex justify-between items-center py-4 sm:py-6">
+            <div className="flex items-center cursor-pointer touch-target" onClick={() => setStep('upload')}>
               <Clock className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">TimeFlow</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">TimeFlow</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Free Plan</span>
+            <div className="flex items-center space-x-3 sm:space-x-4">
+              <span className="text-sm text-gray-500 hidden sm:block">Free Plan</span>
               <Link 
                 href="/upgrade"
-                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                className="btn-secondary text-sm px-3 py-2 sm:px-4"
               >
                 Upgrade
               </Link>
@@ -143,9 +147,9 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Progress Steps */}
-        <div className="mb-8">
+      <main className="container-mobile py-6 sm:py-8 lg:pt-8">
+        {/* Desktop Progress Steps */}
+        <div className="mb-6 sm:mb-8 hidden lg:block">
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-between relative">
               {/* Progress Line */}
@@ -158,9 +162,9 @@ export default function Home() {
               ></div>
               
               {/* Step 1 */}
-              <div className="flex flex-col items-center">
+              <div className="nav-step">
                 <div 
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                  className={`nav-step-icon ${
                     step === 'upload' 
                       ? 'bg-blue-600 border-blue-600 text-white' 
                       : step === 'configure' || step === 'preview'
@@ -184,9 +188,9 @@ export default function Home() {
               </div>
 
               {/* Step 2 */}
-              <div className="flex flex-col items-center">
+              <div className="nav-step">
                 <div 
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                  className={`nav-step-icon ${
                     step === 'configure' 
                       ? 'bg-blue-600 border-blue-600 text-white' 
                       : step === 'preview'
@@ -213,9 +217,9 @@ export default function Home() {
               </div>
 
               {/* Step 3 */}
-              <div className="flex flex-col items-center">
+              <div className="nav-step">
                 <div 
-                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                  className={`nav-step-icon ${
                     step === 'preview' 
                       ? 'bg-blue-600 border-blue-600 text-white' 
                       : 'bg-white border-gray-300 text-gray-400'
@@ -238,9 +242,9 @@ export default function Home() {
             {/* Step Description */}
             <div className="text-center mt-4">
               <p className="text-sm text-gray-600">
-                {step === 'upload' && 'Step 1 of 3: Upload your time tracking CSV file'}
-                {step === 'configure' && 'Step 2 of 3: Configure your invoice details and rates'}
-                {step === 'preview' && 'Step 3 of 3: Preview and download your professional invoice'}
+                {step === 'upload' && 'Upload your time tracking CSV file'}
+                {step === 'configure' && 'Configure your invoice details and rates'}
+                {step === 'preview' && 'Preview and download your professional invoice'}
               </p>
               {step === 'preview' && (
                 <p className="text-sm text-green-600 mt-2 font-medium">
@@ -259,10 +263,10 @@ export default function Home() {
                 Step 1 of 3
               </span>
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+            <h2 className="text-mobile-xl text-gray-900 mb-4">
               Generate Professional Invoices in Seconds
             </h2>
-            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+            <p className="text-mobile-base text-gray-600 mb-8 max-w-2xl mx-auto">
               Upload your time tracking CSV from Toggl, Clockify, or any tool. 
               We'll automatically generate a professional invoice with your branding.
             </p>
@@ -271,11 +275,11 @@ export default function Home() {
         )}
 
         {step === 'configure' && invoiceData && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
+          <div className="section-mobile">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <button
                 onClick={() => setStep('upload')}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors touch-target"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -288,11 +292,11 @@ export default function Home() {
                     Step 2 of 3
                   </span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Configure Invoice</h2>
+                <h2 className="text-mobile-lg text-gray-900">Configure Invoice</h2>
               </div>
-              <div className="w-20"></div> {/* Spacer for centering */}
+              <div className="hidden sm:block w-20"></div> {/* Spacer for centering */}
             </div>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid-mobile lg:grid-cols-2 gap-8">
               <div>
                 <InvoiceForm 
                   invoice={invoiceData} 
@@ -300,7 +304,7 @@ export default function Home() {
                   onNext={() => setStep('preview')}
                 />
               </div>
-              <div>
+              <div className="hidden lg:block">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Live Preview</h3>
                 <InvoicePreview invoice={invoiceData} />
               </div>
@@ -309,11 +313,11 @@ export default function Home() {
         )}
 
         {step === 'preview' && invoiceData && (
-          <div className="space-y-6">
-                        <div className="flex items-center justify-between">
+          <div className="section-mobile">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <button
                 onClick={() => setStep('configure')}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors touch-target"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -326,12 +330,12 @@ export default function Home() {
                     Step 3 of 3
                   </span>
                 </div>
-                <h2 className="text-2xl font-bold text-gray-900">Invoice Preview</h2>
+                <h2 className="text-mobile-lg text-gray-900">Invoice Preview</h2>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <button
                   onClick={() => setStep('upload')}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="btn-secondary w-full sm:w-auto"
                   title="Ctrl+N (or Cmd+N)"
                 >
                   Start Over
@@ -339,7 +343,7 @@ export default function Home() {
                 <button
                   onClick={handleGeneratePDF}
                   disabled={isGenerating}
-                  className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  className="btn-primary w-full sm:w-auto flex items-center justify-center space-x-2"
                   title="Ctrl+S (or Cmd+S)"
                 >
                   <Download className="h-5 w-5" />
@@ -382,7 +386,7 @@ export default function Home() {
                 <ArrowRight className="w-3 h-3 ml-1" />
               </Link>
             </div>
-            <button className="text-gray-400 hover:text-gray-600">
+            <button className="text-gray-400 hover:text-gray-600 touch-target">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -393,7 +397,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="bg-white border-t mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="container-mobile py-8">
           <div className="text-center text-gray-500">
             <p>&copy; 2024 TimeFlow. Generate professional invoices from your time logs.</p>
           </div>

@@ -96,7 +96,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
     type?: string;
     required?: boolean;
   }) => (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <label className="block text-sm font-medium text-gray-700">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
@@ -105,18 +105,18 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
         value={value}
         onChange={(e) => onChange(type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value)}
         placeholder={placeholder}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        className="input-mobile"
         required={required}
       />
     </div>
   );
 
   return (
-    <div className="space-y-6">
+    <div className="section-mobile">
       {/* Quick Start Options */}
-      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <div className="flex items-center justify-between">
-          <div>
+      <div className="card-mobile bg-blue-50 border-blue-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <div className="flex-1">
             <h4 className="font-medium text-blue-900">Quick Start</h4>
             <p className="text-sm text-blue-700">Generate an invoice with default settings in seconds</p>
           </div>
@@ -125,7 +125,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
               setUseDefaults(true);
               onNext();
             }}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+            className="btn-primary text-sm w-full sm:w-auto"
           >
             Use Defaults & Continue
           </button>
@@ -133,9 +133,9 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       </div>
 
       {/* Business Information */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Business Information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="card-mobile">
+        <h3 className="text-mobile-lg text-gray-900 mb-4">Business Information</h3>
+        <div className="grid-mobile-2">
           <InputField
             label="Business Name"
             value={formData.business.name}
@@ -183,9 +183,9 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       </div>
 
       {/* Client Information */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Client Information</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="card-mobile">
+        <h3 className="text-mobile-lg text-gray-900 mb-4">Client Information</h3>
+        <div className="grid-mobile-2">
           <InputField
             label="Client Name"
             value={formData.client.name}
@@ -232,9 +232,9 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       </div>
 
       {/* Invoice Details */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Invoice Details</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="card-mobile">
+        <h3 className="text-mobile-lg text-gray-900 mb-4">Invoice Details</h3>
+        <div className="grid-mobile-2 lg:grid-cols-3">
           <InputField
             label="Invoice Number"
             value={formData.invoiceNumber}
@@ -260,12 +260,12 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       </div>
 
       {/* Advanced Settings */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
+      <div className="card-mobile">
         <button
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className="flex items-center justify-between w-full text-left"
+          className="flex items-center justify-between w-full text-left touch-target"
         >
-          <h3 className="text-lg font-semibold text-gray-900">Advanced Settings</h3>
+          <h3 className="text-mobile-lg text-gray-900">Advanced Settings</h3>
           <svg 
             className={`w-5 h-5 text-gray-500 transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
             fill="none" 
@@ -278,7 +278,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
         
         {showAdvanced && (
           <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid-mobile-2">
               <InputField
                 label="Tax Rate (%)"
                 value={formData.taxRate}
@@ -286,7 +286,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
                 type="number"
                 placeholder="0"
               />
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <label className="block text-sm font-medium text-gray-700">
                   Invoice Terms
                 </label>
@@ -294,7 +294,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
                   value={formData.terms || ''}
                   onChange={(e) => handleInputChange('invoice', 'terms', e.target.value)}
                   placeholder="Net 30, payment due upon receipt, etc."
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="input-mobile min-h-[80px] resize-none"
                   rows={3}
                 />
               </div>
@@ -304,9 +304,9 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       </div>
 
       {/* Time Entries */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Time Entries</h3>
+      <div className="card-mobile">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
+          <h3 className="text-mobile-lg text-gray-900">Time Entries</h3>
           <div className="text-sm text-gray-500">
             {formData.items.length} entries • {formData.items.reduce((sum, item) => sum + item.hours, 0).toFixed(1)} hours total
           </div>
@@ -315,23 +315,30 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
         <div className="space-y-4">
           {formData.items.map((item, index) => (
             <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
-                <div className="md:col-span-2">
-                  <div className="font-medium text-gray-900 text-lg mb-1">{item.project}</div>
-                  <div className="text-sm text-gray-500 flex items-center space-x-4">
-                    <span>📅 {item.date}</span>
-                    <span>⏱️ {item.hours} hours</span>
-                    {item.notes && <span>📝 {item.notes}</span>}
+              <div className="grid-mobile lg:grid-cols-3 gap-4 items-start">
+                <div className="lg:col-span-2">
+                  <div className="font-medium text-gray-900 text-lg mb-2">{item.project}</div>
+                  <div className="text-sm text-gray-500 space-y-1">
+                    <div className="flex items-center space-x-2">
+                      <span>📅 {item.date}</span>
+                      <span>⏱️ {item.hours} hours</span>
+                    </div>
+                    {item.notes && (
+                      <div className="flex items-start space-x-2">
+                        <span>📝</span>
+                        <span className="flex-1">{item.notes}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
-                  <div className="flex-1">
+                <div className="flex flex-col space-y-3">
+                  <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Rate ($/hr)</label>
                     <input
                       type="number"
                       value={item.rate === 0 ? '' : item.rate.toString()}
                       onChange={(e) => handleRateInputChange(index, e.target.value)}
-                      className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="input-mobile text-sm"
                       placeholder="75"
                     />
                   </div>
@@ -349,9 +356,9 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       </div>
 
       {/* Totals Summary */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Summary</h3>
-        <div className="space-y-2">
+      <div className="card-mobile">
+        <h3 className="text-mobile-lg text-gray-900 mb-4">Summary</h3>
+        <div className="space-y-3">
           <div className="flex justify-between">
             <span className="text-gray-600">Subtotal:</span>
             <span className="font-medium">${formData.subtotal.toFixed(2)}</span>
@@ -362,7 +369,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
               <span className="font-medium">${formData.taxAmount.toFixed(2)}</span>
             </div>
           )}
-          <div className="flex justify-between text-lg font-semibold border-t pt-2">
+          <div className="flex justify-between text-lg font-semibold border-t pt-3">
             <span>Total:</span>
             <span>${formData.total.toFixed(2)}</span>
           </div>
@@ -370,8 +377,8 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       </div>
 
       {/* Action Buttons */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+      <div className="card-mobile">
+        <div className="flex flex-col space-y-4">
           <div className="space-y-2">
             <div className="text-sm text-gray-500">
               💡 Tip: All fields marked with * are required
@@ -380,19 +387,19 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
               You can always edit these details later in the preview
             </div>
           </div>
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
             <button
               onClick={() => {
                 setUseDefaults(true);
                 onNext();
               }}
-              className="px-6 py-3 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+              className="btn-secondary w-full sm:w-auto"
             >
               Use Defaults
             </button>
             <button
               onClick={onNext}
-              className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center space-x-2 font-medium"
+              className="btn-primary w-full sm:w-auto flex items-center justify-center space-x-2"
             >
               <span>Continue to Step 3</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

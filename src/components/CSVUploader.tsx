@@ -34,7 +34,7 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
       <div
         {...getRootProps()}
         className={cn(
-          "border-3 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 hover:shadow-lg",
+          "upload-area-mobile",
           isDragActive && !isDragReject && "border-blue-500 bg-blue-50 scale-105",
           isDragReject && "border-red-500 bg-red-50",
           !isDragActive && "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
@@ -42,20 +42,20 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
       >
         <input {...getInputProps()} />
         
-        <div className="flex flex-col items-center space-y-6">
+        <div className="flex flex-col items-center space-y-4 sm:space-y-6">
           {isDragReject ? (
-            <AlertCircle className="h-16 w-16 text-red-500" />
+            <AlertCircle className="h-12 w-12 sm:h-16 sm:w-16 text-red-500" />
           ) : (
             <div className="relative">
-              <Upload className="h-16 w-16 text-blue-500" />
+              <Upload className="h-12 w-12 sm:h-16 sm:w-16 text-blue-500" />
               <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                 <span className="text-xs font-bold text-blue-600">+</span>
               </div>
             </div>
           )}
           
-          <div className="space-y-3">
-            <h3 className="text-2xl font-bold text-gray-900">
+          <div className="space-y-2 sm:space-y-3">
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
               {isDragActive 
                 ? isDragReject 
                   ? 'Invalid file type' 
@@ -64,7 +64,7 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
               }
             </h3>
             
-            <p className="text-lg text-gray-600">
+            <p className="text-base sm:text-lg text-gray-600">
               {isDragReject 
                 ? 'Please upload a valid CSV file'
                 : 'Drag and drop your CSV file here, or click to browse'
@@ -73,8 +73,8 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
           </div>
           
           {!isDragActive && (
-            <div className="flex items-center space-x-2 text-base text-gray-500">
-              <FileText className="h-5 w-5" />
+            <div className="flex items-center space-x-2 text-sm sm:text-base text-gray-500">
+              <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
               <span>Supports: Toggl, Clockify, Harvest, and more</span>
             </div>
           )}
@@ -82,34 +82,34 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
       </div>
       
       {/* Supported Formats & Examples */}
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="mt-6 sm:mt-8 grid-mobile md:grid-cols-2 gap-6">
         {/* Supported Tools */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
+        <div className="card-mobile">
           <h4 className="text-lg font-semibold text-gray-900 mb-4">Supported Time Tracking Tools</h4>
           <div className="space-y-3">
             <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center">
+              <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center flex-shrink-0">
                 <span className="text-red-600 font-bold text-sm">T</span>
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-900">Toggl</div>
                 <div className="text-sm text-gray-500">Export from Reports → Detailed</div>
               </div>
             </div>
             <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center flex-shrink-0">
                 <span className="text-blue-600 font-bold text-sm">C</span>
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-900">Clockify</div>
                 <div className="text-sm text-gray-500">Export from Reports → Detailed</div>
               </div>
             </div>
             <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
+              <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center flex-shrink-0">
                 <span className="text-green-600 font-bold text-sm">H</span>
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <div className="font-medium text-gray-900">Harvest</div>
                 <div className="text-sm text-gray-500">Export from Reports → Detailed</div>
               </div>
@@ -118,8 +118,8 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
         </div>
 
         {/* Sample Format */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border">
-          <div className="flex items-center justify-between mb-4">
+        <div className="card-mobile">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
             <h4 className="text-lg font-semibold text-gray-900">Expected CSV Format</h4>
             <button
               onClick={() => {
@@ -137,12 +137,12 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
                 document.body.removeChild(link);
                 URL.revokeObjectURL(url);
               }}
-              className="text-sm text-blue-600 hover:text-blue-800 transition-colors font-medium"
+              className="btn-secondary text-sm w-full sm:w-auto"
             >
               Download Sample
             </button>
           </div>
-          <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm">
+          <div className="bg-gray-900 text-green-400 p-3 sm:p-4 rounded-lg font-mono text-xs sm:text-sm overflow-x-auto">
             <div className="text-gray-400 mb-2"># CSV Headers</div>
             <div>Client,Project,Date,Duration,Notes,Billable</div>
             <div className="text-gray-400 mt-3 mb-2"># Example Rows</div>
