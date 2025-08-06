@@ -1,0 +1,404 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Upload, FileText, Download, Settings, Clock, Star, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import CSVUploader from '@/components/CSVUploader';
+import InvoicePreview from '@/components/InvoicePreview';
+import InvoiceForm from '@/components/InvoiceForm';
+import { InvoiceData, TimeEntry } from '@/types';
+import { parseCSV, convertTimeEntriesToInvoiceItems, calculateTotals } from '@/lib/csv-parser';
+import { generateInvoicePDF } from '@/lib/pdf-generator';
+import { generateInvoiceNumber, calculateDueDate, downloadBlob } from '@/lib/utils';
+
+export default function Home() {
+  const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [step, setStep] = useState<'upload' | 'configure' | 'preview'>('upload');
+
+  const handleCSVUpload = async (file: File) => {
+    try {
+      const parsedData = await parseCSV(file);
+      
+      // Convert CSV data to time entries
+      const timeEntries: TimeEntry[] = parsedData.rows.map((row: any) => ({
+        client: row[parsedData.columnMapping.client] || '',
+        project: row[parsedData.columnMapping.project] || '',
+        date: row[parsedData.columnMapping.date] || '',
+        duration: parseFloat(row[parsedData.columnMapping.duration]) || 0,
+        notes: row[parsedData.columnMapping.notes || ''] || '',
+        billable: row[parsedData.columnMapping.billable || ''] === 'TRUE' || true
+      }));
+
+      // Convert to invoice items
+      const invoiceItems = convertTimeEntriesToInvoiceItems(timeEntries, 75); // Default rate
+      const totals = calculateTotals(invoiceItems, 0); // No tax by default
+
+      // Create initial invoice data
+      const initialInvoice: InvoiceData = {
+        id: generateInvoiceNumber(),
+        invoiceNumber: generateInvoiceNumber('INV'),
+        date: new Date().toISOString().split('T')[0],
+        dueDate: calculateDueDate(new Date().toISOString().split('T')[0], 30),
+        business: {
+          name: '',
+          address: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          country: '',
+          email: '',
+        },
+        client: {
+          name: timeEntries[0]?.client || '',
+          address: '',
+          city: '',
+          state: '',
+          zipCode: '',
+          country: '',
+        },
+        items: invoiceItems,
+        subtotal: totals.subtotal,
+        taxRate: 0,
+        taxAmount: totals.taxAmount,
+        total: totals.total,
+        watermark: true, // Free version watermark
+      };
+
+      setInvoiceData(initialInvoice);
+      setStep('configure');
+    } catch (error) {
+      console.error('Error parsing CSV:', error);
+      alert('Error parsing CSV file. Please check the file format.');
+    }
+  };
+
+  const handleInvoiceUpdate = (updatedInvoice: InvoiceData) => {
+    setInvoiceData(updatedInvoice);
+  };
+
+  const handleGeneratePDF = async () => {
+    if (!invoiceData) return;
+
+    setIsGenerating(true);
+    try {
+      const pdfBytes = await generateInvoicePDF(invoiceData);
+      const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
+      downloadBlob(blob, `invoice-${invoiceData.invoiceNumber}.pdf`);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      alert('Error generating PDF. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.ctrlKey || event.metaKey) {
+        switch (event.key) {
+          case 's':
+            event.preventDefault();
+            if (step === 'preview' && invoiceData) {
+              handleGeneratePDF();
+            }
+            break;
+          case 'n':
+            event.preventDefault();
+            setStep('upload');
+            break;
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, [step, invoiceData]);
+
+  return (
+    <div className="min-h-screen">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div className="flex items-center cursor-pointer" onClick={() => setStep('upload')}>
+              <Clock className="h-8 w-8 text-blue-600 mr-3" />
+              <h1 className="text-2xl font-bold text-gray-900">TimeFlow</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-500">Free Plan</span>
+              <Link 
+                href="/upgrade"
+                className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+              >
+                Upgrade
+              </Link>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="flex items-center justify-between relative">
+              {/* Progress Line */}
+              <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 -z-10"></div>
+              <div 
+                className={`absolute top-5 left-0 h-0.5 bg-blue-600 transition-all duration-500 -z-10 ${
+                  step === 'upload' ? 'w-0' : 
+                  step === 'configure' ? 'w-1/2' : 'w-full'
+                }`}
+              ></div>
+              
+              {/* Step 1 */}
+              <div className="flex flex-col items-center">
+                <div 
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                    step === 'upload' 
+                      ? 'bg-blue-600 border-blue-600 text-white' 
+                      : step === 'configure' || step === 'preview'
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : 'bg-white border-gray-300 text-gray-400'
+                  }`}
+                >
+                  {step === 'upload' ? (
+                    <Upload className="h-5 w-5" />
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                </div>
+                <span className={`text-sm font-medium mt-2 ${
+                  step === 'upload' ? 'text-blue-600' : 'text-gray-600'
+                }`}>
+                  Upload CSV
+                </span>
+              </div>
+
+              {/* Step 2 */}
+              <div className="flex flex-col items-center">
+                <div 
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                    step === 'configure' 
+                      ? 'bg-blue-600 border-blue-600 text-white' 
+                      : step === 'preview'
+                      ? 'bg-green-500 border-green-500 text-white'
+                      : 'bg-white border-gray-300 text-gray-400'
+                  }`}
+                >
+                  {step === 'configure' ? (
+                    <Settings className="h-5 w-5" />
+                  ) : step === 'preview' ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <Settings className="h-5 w-5" />
+                  )}
+                </div>
+                <span className={`text-sm font-medium mt-2 ${
+                  step === 'configure' ? 'text-blue-600' : 
+                  step === 'preview' ? 'text-gray-600' : 'text-gray-400'
+                }`}>
+                  Configure
+                </span>
+              </div>
+
+              {/* Step 3 */}
+              <div className="flex flex-col items-center">
+                <div 
+                  className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                    step === 'preview' 
+                      ? 'bg-blue-600 border-blue-600 text-white' 
+                      : 'bg-white border-gray-300 text-gray-400'
+                  }`}
+                >
+                  {step === 'preview' ? (
+                    <FileText className="h-5 w-5" />
+                  ) : (
+                    <FileText className="h-5 w-5" />
+                  )}
+                </div>
+                <span className={`text-sm font-medium mt-2 ${
+                  step === 'preview' ? 'text-blue-600' : 'text-gray-400'
+                }`}>
+                  Preview & Download
+                </span>
+              </div>
+            </div>
+            
+            {/* Step Description */}
+            <div className="text-center mt-4">
+              <p className="text-sm text-gray-600">
+                {step === 'upload' && 'Step 1 of 3: Upload your time tracking CSV file'}
+                {step === 'configure' && 'Step 2 of 3: Configure your invoice details and rates'}
+                {step === 'preview' && 'Step 3 of 3: Preview and download your professional invoice'}
+              </p>
+              {step === 'preview' && (
+                <p className="text-sm text-green-600 mt-2 font-medium">
+                  🎉 You're almost done! Review your invoice and download the PDF.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Step Content */}
+        {step === 'upload' && (
+          <div className="text-center">
+            <div className="mb-6">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                Step 1 of 3
+              </span>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Generate Professional Invoices in Seconds
+            </h2>
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              Upload your time tracking CSV from Toggl, Clockify, or any tool. 
+              We'll automatically generate a professional invoice with your branding.
+            </p>
+            <CSVUploader onUpload={handleCSVUpload} />
+          </div>
+        )}
+
+        {step === 'configure' && invoiceData && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => setStep('upload')}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Back to Step 1</span>
+              </button>
+              <div className="text-center">
+                <div className="mb-2">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    Step 2 of 3
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Configure Invoice</h2>
+              </div>
+              <div className="w-20"></div> {/* Spacer for centering */}
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div>
+                <InvoiceForm 
+                  invoice={invoiceData} 
+                  onUpdate={handleInvoiceUpdate}
+                  onNext={() => setStep('preview')}
+                />
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Live Preview</h3>
+                <InvoicePreview invoice={invoiceData} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 'preview' && invoiceData && (
+          <div className="space-y-6">
+                        <div className="flex items-center justify-between">
+              <button
+                onClick={() => setStep('configure')}
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+                <span>Back to Step 2</span>
+              </button>
+              <div className="text-center">
+                <div className="mb-2">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    Step 3 of 3
+                  </span>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">Invoice Preview</h2>
+              </div>
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setStep('upload')}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  title="Ctrl+N (or Cmd+N)"
+                >
+                  Start Over
+                </button>
+                <button
+                  onClick={handleGeneratePDF}
+                  disabled={isGenerating}
+                  className="flex items-center space-x-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  title="Ctrl+S (or Cmd+S)"
+                >
+                  <Download className="h-5 w-5" />
+                  <span>{isGenerating ? 'Generating...' : 'Download PDF'}</span>
+                </button>
+              </div>
+            </div>
+            <InvoicePreview invoice={invoiceData} />
+          </div>
+        )}
+      </main>
+
+      {/* Success Notification */}
+      {showSuccess && (
+        <div className="fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center space-x-2">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          <span>PDF downloaded successfully! 🎉</span>
+        </div>
+      )}
+
+      {/* Upgrade Prompt */}
+      {step === 'preview' && invoiceData && (
+        <div className="fixed bottom-4 left-4 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 max-w-sm">
+          <div className="flex items-start space-x-3">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <Star className="w-4 h-4 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h4 className="font-medium text-gray-900 text-sm mb-1">Remove the watermark</h4>
+              <p className="text-gray-600 text-xs mb-3">
+                Upgrade to Pro to remove the "FREE VERSION" watermark and add your branding.
+              </p>
+              <Link 
+                href="/upgrade"
+                className="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800"
+              >
+                View Plans
+                <ArrowRight className="w-3 h-3 ml-1" />
+              </Link>
+            </div>
+            <button className="text-gray-400 hover:text-gray-600">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <footer className="bg-white border-t mt-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="text-center text-gray-500">
+            <p>&copy; 2024 TimeFlow. Generate professional invoices from your time logs.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+} 

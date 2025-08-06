@@ -1,0 +1,15 @@
+Client,Project,Date,Duration,Notes,Billable
+Acme Inc,Website Redesign,2024-01-15,2.5,Initial design meeting and requirements gathering,TRUE
+Acme Inc,Website Redesign,2024-01-16,3.0,Wireframes and mockups,TRUE
+Acme Inc,Website Redesign,2024-01-17,4.5,Frontend development - homepage,TRUE
+Acme Inc,Website Redesign,2024-01-18,2.0,Content review and revisions,TRUE
+Acme Inc,Website Redesign,2024-01-19,3.5,Backend integration and testing,TRUE
+Beta LLC,Mobile App Development,2024-01-20,1.5,Project kickoff call,TRUE
+Beta LLC,Mobile App Development,2024-01-21,5.0,UI/UX design for main screens,TRUE
+Beta LLC,Mobile App Development,2024-01-22,4.0,API development and database setup,TRUE
+Beta LLC,Mobile App Development,2024-01-23,3.5,User authentication implementation,TRUE
+Beta LLC,Mobile App Development,2024-01-24,2.0,Testing and bug fixes,TRUE
+Gamma Corp,Logo Design,2024-01-25,2.0,Brand research and concept development,TRUE
+Gamma Corp,Logo Design,2024-01-26,3.5,Initial logo concepts,TRUE
+Gamma Corp,Logo Design,2024-01-27,1.5,Client feedback and revisions,TRUE
+Gamma Corp,Logo Design,2024-01-28,2.0,Final logo design and file preparation,TRUE 
