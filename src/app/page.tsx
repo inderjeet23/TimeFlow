@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Upload, FileText, Download, Settings, Clock, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import CSVUploader from '@/components/CSVUploader';
+import InputMethodSelector from '@/components/InputMethodSelector';
 import InvoicePreview from '@/components/InvoicePreview';
 import InvoiceForm from '@/components/InvoiceForm';
 import MobileNavigation from '@/components/MobileNavigation';
@@ -17,6 +17,47 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [step, setStep] = useState<'upload' | 'configure' | 'preview'>('upload');
+
+  const handleTimeEntriesComplete = (timeEntries: TimeEntry[]) => {
+    // Convert to invoice items with default rate
+    const defaultRate = 75;
+    const invoiceItems = convertTimeEntriesToInvoiceItems(timeEntries, defaultRate);
+    const totals = calculateTotals(invoiceItems, 0); // No tax by default
+
+    // Create initial invoice data
+    const initialInvoice: InvoiceData = {
+      id: generateInvoiceNumber(),
+      invoiceNumber: generateInvoiceNumber('INV'),
+      date: new Date().toISOString().split('T')[0],
+      dueDate: calculateDueDate(new Date().toISOString().split('T')[0], 30),
+      business: {
+        name: '',
+        address: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: '',
+        email: '',
+      },
+      client: {
+        name: timeEntries[0]?.client || '',
+        address: '',
+        city: '',
+        state: '',
+        zipCode: '',
+        country: '',
+      },
+      items: invoiceItems,
+      subtotal: totals.subtotal,
+      taxRate: 0,
+      taxAmount: totals.taxAmount,
+      total: totals.total,
+      watermark: true, // Free version watermark
+    };
+
+    setInvoiceData(initialInvoice);
+    setStep('configure');
+  };
 
   const handleCSVUpload = async (file: File) => {
     try {
@@ -32,43 +73,7 @@ export default function Home() {
         billable: row[parsedData.columnMapping.billable || ''] === 'TRUE' || true
       }));
 
-      // Convert to invoice items
-      const invoiceItems = convertTimeEntriesToInvoiceItems(timeEntries, 75); // Default rate
-      const totals = calculateTotals(invoiceItems, 0); // No tax by default
-
-      // Create initial invoice data
-      const initialInvoice: InvoiceData = {
-        id: generateInvoiceNumber(),
-        invoiceNumber: generateInvoiceNumber('INV'),
-        date: new Date().toISOString().split('T')[0],
-        dueDate: calculateDueDate(new Date().toISOString().split('T')[0], 30),
-        business: {
-          name: '',
-          address: '',
-          city: '',
-          state: '',
-          zipCode: '',
-          country: '',
-          email: '',
-        },
-        client: {
-          name: timeEntries[0]?.client || '',
-          address: '',
-          city: '',
-          state: '',
-          zipCode: '',
-          country: '',
-        },
-        items: invoiceItems,
-        subtotal: totals.subtotal,
-        taxRate: 0,
-        taxAmount: totals.taxAmount,
-        total: totals.total,
-        watermark: true, // Free version watermark
-      };
-
-      setInvoiceData(initialInvoice);
-      setStep('configure');
+      handleTimeEntriesComplete(timeEntries);
     } catch (error) {
       console.error('Error parsing CSV:', error);
       alert('Error parsing CSV file. Please check the file format.');
@@ -183,7 +188,7 @@ export default function Home() {
                 <span className={`text-sm font-medium mt-2 ${
                   step === 'upload' ? 'text-blue-600' : 'text-gray-600'
                 }`}>
-                  Upload CSV
+                  Add Time Data
                 </span>
               </div>
 
@@ -242,7 +247,7 @@ export default function Home() {
             {/* Step Description */}
             <div className="text-center mt-4">
               <p className="text-sm text-gray-600">
-                {step === 'upload' && 'Upload your time tracking CSV file'}
+                {step === 'upload' && 'Add your time tracking data via CSV upload or manual entry'}
                 {step === 'configure' && 'Configure your invoice details and rates'}
                 {step === 'preview' && 'Preview and download your professional invoice'}
               </p>
@@ -257,21 +262,10 @@ export default function Home() {
 
         {/* Step Content */}
         {step === 'upload' && (
-          <div className="text-center">
-            <div className="mb-6">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                Step 1 of 3
-              </span>
-            </div>
-            <h2 className="text-mobile-xl text-gray-900 mb-4">
-              Generate Professional Invoices in Seconds
-            </h2>
-            <p className="text-mobile-base text-gray-600 mb-8 max-w-2xl mx-auto">
-              Upload your time tracking CSV from Toggl, Clockify, or any tool. 
-              We'll automatically generate a professional invoice with your branding.
-            </p>
-            <CSVUploader onUpload={handleCSVUpload} />
-          </div>
+          <InputMethodSelector 
+            onTimeEntriesComplete={handleTimeEntriesComplete}
+            onCSVUpload={handleCSVUpload}
+          />
         )}
 
         {step === 'configure' && invoiceData && (

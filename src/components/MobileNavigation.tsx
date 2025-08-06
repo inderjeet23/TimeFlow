@@ -12,7 +12,7 @@ export default function MobileNavigation({ currentStep, onStepChange }: MobileNa
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const steps = [
-    { id: 'upload', label: 'Upload CSV', icon: Upload, description: 'Upload your time tracking CSV' },
+    { id: 'upload', label: 'Add Time Data', icon: Upload, description: 'Add your time tracking data' },
     { id: 'configure', label: 'Configure', icon: Settings, description: 'Set up invoice details' },
     { id: 'preview', label: 'Preview', icon: FileText, description: 'Review and download' },
   ] as const;
