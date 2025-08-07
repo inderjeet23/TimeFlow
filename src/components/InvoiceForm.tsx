@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { InvoiceData } from '@/types';
-import { calculateTotals } from '@/lib/csv-parser';
+import { calculateTotals, extractMostCommonClient } from '@/lib/csv-parser';
 import { cn } from '@/lib/utils';
 
 interface InvoiceFormProps {
@@ -15,6 +15,9 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
   const [formData, setFormData] = useState<InvoiceData>(invoice);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [useDefaults, setUseDefaults] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [showRatePrompt, setShowRatePrompt] = useState(false);
+  const [lastRateApplied, setLastRateApplied] = useState<number | null>(null);
 
   useEffect(() => {
     setFormData(invoice);
@@ -39,7 +42,36 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
     }
   }, [formData.business.name, useDefaults]);
 
+  // Pre-fill client name from CSV data
+  useEffect(() => {
+    if (formData.items.length > 0 && !formData.client.name) {
+      const mostCommonClient = extractMostCommonClient(formData.items.map(item => ({
+        client: item.client,
+        project: item.project,
+        date: item.date,
+        duration: item.hours,
+        notes: item.notes,
+        billable: true
+      })));
+      
+      if (mostCommonClient) {
+        const updatedInvoice = { ...formData };
+        updatedInvoice.client = {
+          ...updatedInvoice.client,
+          name: mostCommonClient
+        };
+        setFormData(updatedInvoice);
+        onUpdate(updatedInvoice);
+      }
+    }
+  }, [formData.items, formData.client.name]);
+
   const handleInputChange = (section: 'business' | 'client' | 'invoice', field: string, value: string | number) => {
+    // Mark that user has interacted with the form
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+    }
+
     const updatedInvoice = { ...formData };
     
     if (section === 'business') {
@@ -63,6 +95,11 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
   };
 
   const handleItemRateChange = (index: number, rate: number) => {
+    // Mark that user has interacted with the form
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
+    }
+
     const updatedInvoice = { ...formData };
     updatedInvoice.items[index].rate = rate;
     updatedInvoice.items[index].amount = updatedInvoice.items[index].hours * rate;
@@ -74,11 +111,38 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
     
     setFormData(updatedInvoice);
     onUpdate(updatedInvoice);
+
+    // Show rate application prompt if this is the first rate entry and there are multiple items
+    if (rate > 0 && formData.items.length > 1 && lastRateApplied !== rate) {
+      const otherItemsNeedRate = formData.items.some((item, i) => i !== index && item.rate === 0);
+      if (otherItemsNeedRate) {
+        setShowRatePrompt(true);
+        setLastRateApplied(rate);
+      }
+    }
   };
 
   const handleRateInputChange = (index: number, value: string) => {
     const rate = value === '' ? 0 : parseFloat(value) || 0;
     handleItemRateChange(index, rate);
+  };
+
+  const applyRateToAll = (rate: number) => {
+    const updatedInvoice = { ...formData };
+    updatedInvoice.items = updatedInvoice.items.map(item => ({
+      ...item,
+      rate: rate,
+      amount: item.hours * rate
+    }));
+    
+    const totals = calculateTotals(updatedInvoice.items, updatedInvoice.taxRate);
+    updatedInvoice.subtotal = totals.subtotal;
+    updatedInvoice.taxAmount = totals.taxAmount;
+    updatedInvoice.total = totals.total;
+    
+    setFormData(updatedInvoice);
+    onUpdate(updatedInvoice);
+    setShowRatePrompt(false);
   };
 
   const InputField = ({ 
@@ -103,7 +167,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         className="input-mobile"
         required={required}
@@ -376,6 +440,39 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
         </div>
       </div>
 
+      {/* Rate Application Prompt */}
+      {showRatePrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full animate-fadeIn">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 text-xl">💡</span>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Apply ${lastRateApplied}/hr to all entries?
+              </h3>
+              <p className="text-gray-600 mb-6">
+                This will save you time by applying the same rate to all {formData.items.length} time entries.
+              </p>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => setShowRatePrompt(false)}
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  No, thanks
+                </button>
+                <button
+                  onClick={() => applyRateToAll(lastRateApplied!)}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Apply to all
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="card-mobile">
         <div className="flex flex-col space-y-4">
@@ -387,19 +484,29 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
               You can always edit these details later in the preview
             </div>
           </div>
+          
+          {/* Smart CTA Flow */}
           <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
-            <button
-              onClick={() => {
-                setUseDefaults(true);
-                onNext();
-              }}
-              className="btn-secondary w-full sm:w-auto"
-            >
-              Use Defaults
-            </button>
+            {/* Show "Use Defaults" only if user hasn't interacted */}
+            {!hasUserInteracted && (
+              <button
+                onClick={() => {
+                  setUseDefaults(true);
+                  onNext();
+                }}
+                className="btn-secondary w-full sm:w-auto"
+              >
+                Use Defaults & Continue
+              </button>
+            )}
+            
+            {/* Primary CTA - always visible */}
             <button
               onClick={onNext}
-              className="btn-primary w-full sm:w-auto flex items-center justify-center space-x-2"
+              className={cn(
+                "btn-primary w-full sm:w-auto flex items-center justify-center space-x-2",
+                hasUserInteracted ? "w-full" : "flex-1"
+              )}
             >
               <span>Continue to Step 3</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

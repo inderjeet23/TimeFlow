@@ -99,6 +99,33 @@ export function parseDate(dateString: string): string {
   return date.toISOString().split('T')[0];
 }
 
+export function extractMostCommonClient(timeEntries: TimeEntry[]): string {
+  if (!timeEntries || timeEntries.length === 0) {
+    return '';
+  }
+
+  // Count occurrences of each client
+  const clientCounts: Record<string, number> = {};
+  timeEntries.forEach(entry => {
+    if (entry.client) {
+      clientCounts[entry.client] = (clientCounts[entry.client] || 0) + 1;
+    }
+  });
+
+  // Find the client with the most entries
+  let mostCommonClient = '';
+  let maxCount = 0;
+
+  Object.entries(clientCounts).forEach(([client, count]) => {
+    if (count > maxCount) {
+      maxCount = count;
+      mostCommonClient = client;
+    }
+  });
+
+  return mostCommonClient;
+}
+
 export function groupByClient(items: InvoiceItem[]): Record<string, InvoiceItem[]> {
   return items.reduce((groups, item) => {
     if (!groups[item.client]) {

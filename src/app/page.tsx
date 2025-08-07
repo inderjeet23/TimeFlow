@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Upload, FileText, Download, Settings, Clock, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import InputMethodSelector from '@/components/InputMethodSelector';
@@ -15,52 +15,50 @@ import { generateInvoicePDF } from '@/lib/pdf-generator';
 import { generateInvoiceNumber, calculateDueDate, downloadBlob } from '@/lib/utils';
 
 export default function Home() {
-  const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [invoice, setInvoice] = useState<InvoiceData>({
+    id: '',
+    business: { name: '', email: '', address: '', city: '', state: '', zipCode: '', country: '' },
+    client: { name: '', email: '', address: '', city: '', state: '', zipCode: '', country: '' },
+    items: [],
+    subtotal: 0,
+    taxRate: 0,
+    taxAmount: 0,
+    total: 0,
+    invoiceNumber: '',
+    date: new Date().toISOString().split('T')[0],
+    dueDate: '',
+    notes: '',
+    terms: '',
+    watermark: true
+  });
   const [step, setStep] = useState<'upload' | 'configure' | 'preview'>('upload');
   const [inputMethod, setInputMethod] = useState<'csv' | 'manual' | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const handleTimeEntriesComplete = (timeEntries: TimeEntry[]) => {
-    // Convert to invoice items with default rate
-    const defaultRate = 75;
+  const handleTimeEntriesComplete = useCallback((timeEntries: TimeEntry[]) => {
+    const defaultRate = 75; // Default hourly rate
     const invoiceItems = convertTimeEntriesToInvoiceItems(timeEntries, defaultRate);
-    const totals = calculateTotals(invoiceItems, 0); // No tax by default
-
-    // Create initial invoice data
-    const initialInvoice: InvoiceData = {
-      id: generateInvoiceNumber(),
-      invoiceNumber: generateInvoiceNumber('INV'),
-      date: new Date().toISOString().split('T')[0],
-      dueDate: calculateDueDate(new Date().toISOString().split('T')[0], 30),
-      business: {
-        name: '',
-        address: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: '',
-        email: '',
-      },
-      client: {
-        name: timeEntries[0]?.client || '',
-        address: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: '',
-      },
-      items: invoiceItems,
-      subtotal: totals.subtotal,
-      taxRate: 0,
-      taxAmount: totals.taxAmount,
-      total: totals.total,
-      watermark: true, // Free version watermark
+    
+    const updatedInvoice = {
+      ...invoice,
+      items: invoiceItems
     };
-
-    setInvoiceData(initialInvoice);
-    setStep('configure');
-  };
+    
+    const totals = calculateTotals(invoiceItems, invoice.taxRate);
+    updatedInvoice.subtotal = totals.subtotal;
+    updatedInvoice.taxAmount = totals.taxAmount;
+    updatedInvoice.total = totals.total;
+    
+    setInvoice(updatedInvoice);
+    
+    // Add animation state for magic moment
+    setIsAnimating(true);
+    setTimeout(() => {
+      setStep('configure');
+      setIsAnimating(false);
+    }, 300);
+  }, [invoice.taxRate]);
 
   const handleCSVUpload = async (file: File) => {
     try {
@@ -92,24 +90,24 @@ export default function Home() {
   };
 
   const handleInvoiceUpdate = (updatedInvoice: InvoiceData) => {
-    setInvoiceData(updatedInvoice);
+    setInvoice(updatedInvoice);
   };
 
   const handleGeneratePDF = async () => {
-    if (!invoiceData) return;
+    if (!invoice) return;
 
-    setIsGenerating(true);
+    // setIsGenerating(true); // This state was removed, so this line is no longer needed.
     try {
-      const pdfBytes = await generateInvoicePDF(invoiceData);
+      const pdfBytes = await generateInvoicePDF(invoice);
       const blob = new Blob([pdfBytes as BlobPart], { type: 'application/pdf' });
-      downloadBlob(blob, `invoice-${invoiceData.invoiceNumber}.pdf`);
+      downloadBlob(blob, `invoice-${invoice.invoiceNumber}.pdf`);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Error generating PDF. Please try again.');
     } finally {
-      setIsGenerating(false);
+      // setIsGenerating(false); // This state was removed, so this line is no longer needed.
     }
   };
 
@@ -120,7 +118,7 @@ export default function Home() {
         switch (event.key) {
           case 's':
             event.preventDefault();
-            if (step === 'preview' && invoiceData) {
+            if (step === 'preview' && invoice) {
               handleGeneratePDF();
             }
             break;
@@ -134,7 +132,7 @@ export default function Home() {
 
     document.addEventListener('keydown', handleKeyPress);
     return () => document.removeEventListener('keydown', handleKeyPress);
-  }, [step, invoiceData]);
+  }, [step, invoice]);
 
   // Mobile Step 1: Show mobile step picker
   if (step === 'upload') {
@@ -288,7 +286,7 @@ export default function Home() {
         </div>
 
         {/* Step Content */}
-        {step === 'configure' && invoiceData && (
+        {step === 'configure' && invoice && (
           <div className="section-mobile">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <button
@@ -313,20 +311,20 @@ export default function Home() {
             <div className="grid-mobile lg:grid-cols-2 gap-8">
               <div>
                 <InvoiceForm 
-                  invoice={invoiceData} 
+                  invoice={invoice} 
                   onUpdate={handleInvoiceUpdate}
                   onNext={() => setStep('preview')}
                 />
               </div>
               <div className="hidden lg:block">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Live Preview</h3>
-                <InvoicePreview invoice={invoiceData} />
+                <InvoicePreview invoice={invoice} />
               </div>
             </div>
           </div>
         )}
 
-        {step === 'preview' && invoiceData && (
+        {step === 'preview' && invoice && (
           <div className="section-mobile">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <button
@@ -356,16 +354,15 @@ export default function Home() {
                 </button>
                 <button
                   onClick={handleGeneratePDF}
-                  disabled={isGenerating}
                   className="btn-primary w-full sm:w-auto flex items-center justify-center space-x-2"
                   title="Ctrl+S (or Cmd+S)"
                 >
                   <Download className="h-5 w-5" />
-                  <span>{isGenerating ? 'Generating...' : 'Download PDF'}</span>
+                  <span>Download PDF</span>
                 </button>
               </div>
             </div>
-            <InvoicePreview invoice={invoiceData} />
+            <InvoicePreview invoice={invoice} />
           </div>
         )}
       </main>
@@ -381,7 +378,7 @@ export default function Home() {
       )}
 
       {/* Upgrade Prompt */}
-      {step === 'preview' && invoiceData && (
+      {step === 'preview' && invoice && (
         <div className="fixed bottom-4 left-4 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 max-w-sm">
           <div className="flex items-start space-x-3">
             <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">

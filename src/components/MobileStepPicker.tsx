@@ -142,6 +142,17 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
             </div>
           </div>
 
+          {/* Compare Methods Link - positioned between cards */}
+          <div className="text-center py-2">
+            <button
+              onClick={() => setShowCompare(!showCompare)}
+              className="text-blue-600 text-sm hover:text-blue-700 transition-colors flex items-center justify-center mx-auto space-x-1"
+            >
+              <span>Not sure? Compare methods</span>
+              <ChevronDown className={`w-3 h-3 transition-transform ${showCompare ? 'rotate-180' : ''}`} />
+            </button>
+          </div>
+
           {/* Manual Entry Card */}
           <div 
             className={`rounded-xl border p-4 flex items-start gap-3 cursor-pointer transition-all duration-150 ${
@@ -282,17 +293,6 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
             </div>
           </div>
         )}
-
-        {/* Compare Methods Link */}
-        <div className="text-center pt-4">
-          <button
-            onClick={() => setShowCompare(!showCompare)}
-            className="text-blue-600 text-base hover:text-blue-700 transition-colors flex items-center justify-center mx-auto space-x-1"
-          >
-            <span>Not sure? Compare methods</span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${showCompare ? 'rotate-180' : ''}`} />
-          </button>
-        </div>
 
         {/* Compare Methods Bottom Sheet */}
         {showCompare && (
