@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Upload, Settings, FileText, Menu, X } from 'lucide-react';
+import { SimpleThemeToggle } from './ThemeToggle';
 
 interface MobileNavigationProps {
   currentStep: 'upload' | 'configure' | 'preview';
@@ -29,25 +30,26 @@ export default function MobileNavigation({ currentStep, onStepChange }: MobileNa
   return (
     <div className="lg:hidden">
       {/* Mobile Header */}
-      <div className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
+      <div className="sticky top-0 z-40 bg-card border-b border-border shadow-sm">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors touch-target"
+              className="p-2 rounded-lg hover:bg-secondary/50 transition-colors touch-target"
             >
-              {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              {isMenuOpen ? <X className="h-5 w-5 text-foreground" /> : <Menu className="h-5 w-5 text-foreground" />}
             </button>
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-blue-600 font-bold text-sm">T</span>
+              <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center">
+                <span className="text-primary font-bold text-sm">T</span>
               </div>
-              <span className="font-semibold text-gray-900">TimeFlow</span>
+              <span className="font-semibold text-foreground">TimeFlow</span>
             </div>
           </div>
           
           <div className="flex items-center space-x-2">
-            <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+            <SimpleThemeToggle />
+            <span className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded-full">
               Free
             </span>
           </div>

@@ -9,6 +9,7 @@ import ManualTimeEntry from '@/components/ManualTimeEntry';
 import InvoicePreview from '@/components/InvoicePreview';
 import InvoiceForm from '@/components/InvoiceForm';
 import MobileNavigation from '@/components/MobileNavigation';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { InvoiceData, TimeEntry } from '@/types';
 import { parseCSV, convertTimeEntriesToInvoiceItems, calculateTotals } from '@/lib/csv-parser';
 import { generateInvoicePDF } from '@/lib/pdf-generator';
@@ -166,15 +167,16 @@ export default function Home() {
       <MobileNavigation currentStep={step} onStepChange={setStep} />
       
       {/* Desktop Header */}
-      <header className="bg-white shadow-sm border-b hidden lg:block">
+      <header className="bg-card border-b border-border shadow-sm hidden lg:block">
         <div className="container-mobile">
           <div className="flex justify-between items-center py-4 sm:py-6">
             <div className="flex items-center cursor-pointer touch-target" onClick={() => setStep('upload')}>
-              <Clock className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">TimeFlow</h1>
+              <Clock className="h-8 w-8 text-primary mr-3" />
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground">TimeFlow</h1>
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4">
-              <span className="text-sm text-gray-500 hidden sm:block">Free Plan</span>
+              <ThemeToggle />
+              <span className="text-sm text-muted-foreground hidden sm:block">Free Plan</span>
               <Link 
                 href="/upgrade"
                 className="btn-secondary text-sm px-3 py-2 sm:px-4"

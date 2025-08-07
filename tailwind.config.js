@@ -5,6 +5,7 @@ export default {
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       screens: {
@@ -27,6 +28,70 @@ export default {
         '20': '5rem',
       },
       colors: {
+        // Claude-inspired dark mode palette
+        dark: {
+          bg: '#0f0f0f',          // Deep background like Claude
+          surface: '#1a1a1a',     // Card/surface background
+          elevated: '#2a2a2a',    // Elevated elements
+          border: '#3a3a3a',      // Subtle borders
+          text: {
+            primary: '#f5f5f5',   // Primary text
+            secondary: '#a0a0a0', // Secondary text
+            muted: '#707070',     // Muted text
+          }
+        },
+        // Customizable accent colors
+        accent: {
+          orange: {
+            50: '#fff7ed',
+            100: '#ffedd5',
+            200: '#fed7aa',
+            300: '#fdba74',
+            400: '#fb923c',
+            500: '#f97316',   // Primary orange
+            600: '#ea580c',
+            700: '#c2410c',
+            800: '#9a3412',
+            900: '#7c2d12',
+          },
+          blue: {
+            50: '#eff6ff',
+            100: '#dbeafe',
+            200: '#bfdbfe',
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6',   // Primary blue
+            600: '#2563eb',
+            700: '#1d4ed8',
+            800: '#1e40af',
+            900: '#1e3a8a',
+          },
+          purple: {
+            50: '#faf5ff',
+            100: '#f3e8ff',
+            200: '#e9d5ff',
+            300: '#d8b4fe',
+            400: '#c084fc',
+            500: '#a855f7',   // Primary purple
+            600: '#9333ea',
+            700: '#7c3aed',
+            800: '#6b21a8',
+            900: '#581c87',
+          },
+          green: {
+            50: '#f0fdf4',
+            100: '#dcfce7',
+            200: '#bbf7d0',
+            300: '#86efac',
+            400: '#4ade80',
+            500: '#22c55e',   // Primary green
+            600: '#16a34a',
+            700: '#15803d',
+            800: '#166534',
+            900: '#14532d',
+          },
+        },
+        // Theme-aware colors using CSS variables
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -47,14 +112,6 @@ export default {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-        },
-        popover: {
-          DEFAULT: "hsl(var(--popover))",
-          foreground: "hsl(var(--popover-foreground))",
         },
         card: {
           DEFAULT: "hsl(var(--card))",
