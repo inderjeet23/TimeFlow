@@ -221,8 +221,56 @@
 
   /* Fix date input width on mobile */
   input[type="date"] {
-    max-width: 100%;
+    max-width: 100% !important;
     width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* More specific date input fixes */
+  .relative input[type="date"],
+  div input[type="date"],
+  form input[type="date"] {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Override any potential calendar picker styles */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    max-width: 20px !important;
+    width: 20px !important;
+  }
+
+  /* Ensure date inputs don't overflow their containers */
+  input[type="date"] {
+    min-width: 0 !important;
+    flex-shrink: 1 !important;
+  }
+
+  /* Additional mobile-specific date input constraints */
+  .relative input[type="date"] {
+    overflow: hidden !important;
+  }
+
+  /* Very specific fix for our date inputs */
+  input[type="date"].w-full,
+  input[type="date"][class*="w-full"],
+  input[type="date"][class*="pl-12"] {
+    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+  }
+
+  /* Ensure grid containers constrain their children */
+  .grid > div {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Ensure flex containers constrain their children */
+  .flex > * {
+    min-width: 0;
   }
 
   /* Improve spacing on mobile */
