@@ -274,12 +274,12 @@ export default function Home() {
             
             {/* Step Description */}
             <div className="text-center mt-4">
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-muted-foreground">
                 {step === 'configure' && 'Configure your invoice details and rates'}
                 {step === 'preview' && 'Preview and download your professional invoice'}
               </p>
               {step === 'preview' && (
-                <p className="text-sm text-green-600 mt-2 font-medium">
+                <p className="text-sm text-green-500 mt-2 font-medium">
                   🎉 You're almost done! Review your invoice and download the PDF.
                 </p>
               )}
@@ -293,7 +293,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <button
                 onClick={() => setStep('upload')}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors touch-target"
+                className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors touch-target"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -306,7 +306,7 @@ export default function Home() {
                     Step 2 of 3
                   </span>
                 </div>
-                <h2 className="text-mobile-lg text-gray-900">Configure Invoice</h2>
+                <h2 className="text-mobile-lg text-foreground">Configure Invoice</h2>
               </div>
               <div className="hidden sm:block w-20"></div> {/* Spacer for centering */}
             </div>
@@ -319,7 +319,7 @@ export default function Home() {
                 />
               </div>
               <div className="hidden lg:block">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Live Preview</h3>
+                <h3 className="text-lg font-semibold text-foreground mb-4">Live Preview</h3>
                 <InvoicePreview invoice={invoice} />
               </div>
             </div>
@@ -331,7 +331,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
               <button
                 onClick={() => setStep('configure')}
-                className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors touch-target"
+                className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors touch-target"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -344,7 +344,7 @@ export default function Home() {
                     Step 3 of 3
                   </span>
                 </div>
-                <h2 className="text-mobile-lg text-gray-900">Invoice Preview</h2>
+                <h2 className="text-mobile-lg text-foreground">Invoice Preview</h2>
               </div>
               <div className="flex flex-col sm:flex-row items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <button
@@ -381,25 +381,25 @@ export default function Home() {
 
       {/* Upgrade Prompt */}
       {step === 'preview' && invoice && (
-        <div className="fixed bottom-4 left-4 bg-white border border-gray-200 rounded-lg shadow-lg z-50 p-4 max-w-sm">
+        <div className="fixed bottom-4 left-4 bg-card border border-border rounded-lg shadow-lg z-50 p-4 max-w-sm">
           <div className="flex items-start space-x-3">
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-              <Star className="w-4 h-4 text-blue-600" />
+            <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center flex-shrink-0">
+              <Star className="w-4 h-4 text-primary" />
             </div>
             <div className="flex-1">
-              <h4 className="font-medium text-gray-900 text-sm mb-1">Remove the watermark</h4>
-              <p className="text-gray-600 text-xs mb-3">
+              <h4 className="font-medium text-foreground text-sm mb-1">Remove the watermark</h4>
+              <p className="text-muted-foreground text-xs mb-3">
                 Upgrade to Pro to remove the "FREE VERSION" watermark and add your branding.
               </p>
               <Link 
                 href="/upgrade"
-                className="inline-flex items-center text-xs font-medium text-blue-600 hover:text-blue-800"
+                className="inline-flex items-center text-xs font-medium text-primary hover:text-primary/80"
               >
                 View Plans
                 <ArrowRight className="w-3 h-3 ml-1" />
               </Link>
             </div>
-            <button className="text-gray-400 hover:text-gray-600 touch-target">
+            <button className="text-muted-foreground hover:text-foreground touch-target">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -409,9 +409,9 @@ export default function Home() {
       )}
 
       {/* Footer */}
-      <footer className="bg-white border-t mt-16">
+      <footer className="bg-card border-t border-border mt-16">
         <div className="container-mobile py-8">
-          <div className="text-center text-gray-500">
+          <div className="text-center text-muted-foreground">
             <p>&copy; 2024 TimeFlow. Generate professional invoices from your time logs.</p>
           </div>
         </div>

@@ -32,7 +32,7 @@ export default function InputMethodSelector({ onTimeEntriesComplete, onCSVUpload
         <div className="mb-6">
           <button
             onClick={() => setSelectedMethod(null)}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors touch-target"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors touch-target"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -51,7 +51,7 @@ export default function InputMethodSelector({ onTimeEntriesComplete, onCSVUpload
         <div className="mb-6">
           <button
             onClick={() => setSelectedMethod(null)}
-            className="flex items-center space-x-2 text-gray-600 hover:text-gray-800 transition-colors touch-target"
+            className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors touch-target"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -69,14 +69,14 @@ export default function InputMethodSelector({ onTimeEntriesComplete, onCSVUpload
       {/* Header */}
       <div className="text-center mb-8">
         <div className="mb-4">
-          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-primary/20 text-primary">
             Step 1 of 3
           </span>
         </div>
-        <h2 className="text-mobile-xl text-gray-900 mb-4">
+        <h2 className="text-mobile-xl text-foreground mb-4">
           Choose Your Input Method
         </h2>
-        <p className="text-mobile-base text-gray-600 max-w-2xl mx-auto">
+        <p className="text-mobile-base text-muted-foreground max-w-2xl mx-auto">
           You can either upload a CSV file from your time tracking tool or manually enter your time entries.
         </p>
       </div>
@@ -85,18 +85,18 @@ export default function InputMethodSelector({ onTimeEntriesComplete, onCSVUpload
       <div className="grid-mobile md:grid-cols-2 gap-6">
         {/* CSV Upload Option */}
         <div 
-          className="card-mobile cursor-pointer hover:shadow-md transition-all duration-200 border-2 border-transparent hover:border-blue-200"
+          className="card-mobile cursor-pointer hover:shadow-md transition-all duration-200 border-2 border-transparent hover:border-primary/20"
           onClick={() => setSelectedMethod('csv')}
         >
           <div className="text-center p-6">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Upload className="h-8 w-8 text-blue-600" />
+            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Upload className="h-8 w-8 text-primary" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Upload CSV File</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-xl font-semibold text-foreground mb-2">Upload CSV File</h3>
+            <p className="text-muted-foreground mb-4">
               Import your time tracking data from Toggl, Clockify, Harvest, or any other tool.
             </p>
-            <div className="space-y-2 text-sm text-gray-500">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center justify-center space-x-2">
                 <FileText className="h-4 w-4" />
                 <span>Supports multiple time tracking tools</span>
@@ -107,7 +107,7 @@ export default function InputMethodSelector({ onTimeEntriesComplete, onCSVUpload
               </div>
             </div>
             <div className="mt-4">
-              <span className="inline-flex items-center text-blue-600 font-medium">
+              <span className="inline-flex items-center text-primary font-medium">
                 Choose CSV Upload
                 <ArrowRight className="w-4 h-4 ml-1" />
               </span>
@@ -117,18 +117,18 @@ export default function InputMethodSelector({ onTimeEntriesComplete, onCSVUpload
 
         {/* Manual Entry Option */}
         <div 
-          className="card-mobile cursor-pointer hover:shadow-md transition-all duration-200 border-2 border-transparent hover:border-green-200"
+          className="card-mobile cursor-pointer hover:shadow-md transition-all duration-200 border-2 border-transparent hover:border-green-500/20"
           onClick={() => setSelectedMethod('manual')}
         >
           <div className="text-center p-6">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Edit3 className="h-8 w-8 text-green-600" />
+            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Edit3 className="h-8 w-8 text-green-500" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">Manual Entry</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="text-xl font-semibold text-foreground mb-2">Manual Entry</h3>
+            <p className="text-muted-foreground mb-4">
               Enter your time entries manually with a user-friendly form interface.
             </p>
-            <div className="space-y-2 text-sm text-gray-500">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <div className="flex items-center justify-center space-x-2">
                 <Edit3 className="h-4 w-4" />
                 <span>No file upload required</span>
@@ -139,7 +139,7 @@ export default function InputMethodSelector({ onTimeEntriesComplete, onCSVUpload
               </div>
             </div>
             <div className="mt-4">
-              <span className="inline-flex items-center text-green-600 font-medium">
+              <span className="inline-flex items-center text-green-500 font-medium">
                 Choose Manual Entry
                 <ArrowRight className="w-4 h-4 ml-1" />
               </span>
@@ -151,9 +151,9 @@ export default function InputMethodSelector({ onTimeEntriesComplete, onCSVUpload
       {/* Quick Start Options */}
       <div className="mt-8 grid-mobile md:grid-cols-2 gap-6">
         {/* Sample CSV */}
-        <div className="card-mobile bg-blue-50 border-blue-200">
-          <h4 className="font-medium text-blue-900 mb-2">📄 Need a Sample CSV?</h4>
-          <p className="text-sm text-blue-700 mb-3">
+        <div className="card-mobile bg-primary/5 border-primary/20">
+          <h4 className="font-medium text-primary mb-2">📄 Need a Sample CSV?</h4>
+          <p className="text-sm text-primary/80 mb-3">
             Download a sample CSV file to see the expected format for your time tracking data.
           </p>
           <button
@@ -179,9 +179,9 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
         </div>
 
         {/* Quick Manual Entry */}
-        <div className="card-mobile bg-green-50 border-green-200">
-          <h4 className="font-medium text-green-900 mb-2">⚡ Quick Start</h4>
-          <p className="text-sm text-green-700 mb-3">
+        <div className="card-mobile bg-green-500/5 border-green-500/20">
+          <h4 className="font-medium text-green-500 mb-2">⚡ Quick Start</h4>
+          <p className="text-sm text-green-500/80 mb-3">
             Start with a single time entry and add more as needed. Perfect for quick invoices.
           </p>
           <button
@@ -194,11 +194,11 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
       </div>
 
       {/* Tips */}
-      <div className="mt-8 card-mobile bg-gray-50">
-        <h4 className="font-medium text-gray-900 mb-2">💡 Which method should I choose?</h4>
-        <div className="grid-mobile md:grid-cols-2 gap-4 text-sm text-gray-600">
+      <div className="mt-8 card-mobile bg-muted/50">
+        <h4 className="font-medium text-foreground mb-2">💡 Which method should I choose?</h4>
+        <div className="grid-mobile md:grid-cols-2 gap-4 text-sm text-muted-foreground">
           <div>
-            <h5 className="font-medium text-gray-700 mb-1">Choose CSV Upload if:</h5>
+            <h5 className="font-medium text-foreground mb-1">Choose CSV Upload if:</h5>
             <ul className="space-y-1">
               <li>• You use a time tracking tool</li>
               <li>• You have many time entries</li>
@@ -206,7 +206,7 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
             </ul>
           </div>
           <div>
-            <h5 className="font-medium text-gray-700 mb-1">Choose Manual Entry if:</h5>
+            <h5 className="font-medium text-foreground mb-1">Choose Manual Entry if:</h5>
             <ul className="space-y-1">
               <li>• You don't use time tracking tools</li>
               <li>• You have just a few entries</li>
