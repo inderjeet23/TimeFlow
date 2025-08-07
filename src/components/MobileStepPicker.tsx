@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { Upload, Edit3, Check, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Upload, Edit3, Check, ChevronDown, X } from 'lucide-react';
 import { TimeEntry } from '@/types';
 import ManualTimeEntry from './ManualTimeEntry';
 
@@ -18,6 +18,19 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
   const [showCompare, setShowCompare] = useState(false);
   const [currentView, setCurrentView] = useState<View>('picker');
   const [csvFile, setCsvFile] = useState<File | null>(null);
+  const csvSectionRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to CSV section when selected
+  useEffect(() => {
+    if (selectedMethod === 'csv' && csvSectionRef.current) {
+      setTimeout(() => {
+        csvSectionRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'center' 
+        });
+      }, 100);
+    }
+  }, [selectedMethod]);
 
   const handleContinue = () => {
     if (selectedMethod === 'csv' && csvFile) {
@@ -35,6 +48,10 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
 
   const handleCSVFileSelect = (file: File) => {
     setCsvFile(file);
+  };
+
+  const handleRemoveFile = () => {
+    setCsvFile(null);
   };
 
   const handleManualEntries = (timeEntries: TimeEntry[]) => {
@@ -161,7 +178,10 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
 
         {/* Progressive Disclosure - CSV Helper */}
         {selectedMethod === 'csv' && (
-          <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-3">
+          <div 
+            ref={csvSectionRef}
+            className="bg-white rounded-xl border border-gray-200 p-4 space-y-3 animate-fadeIn"
+          >
             <div className="flex items-center justify-between">
               <h4 className="font-medium text-gray-900">Upload your CSV file</h4>
             </div>
@@ -187,9 +207,38 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
                 </button>
               ) : (
                 <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
-                  <div className="flex items-center space-x-2">
-                    <Check className="w-5 h-5 text-green-600" />
-                    <span className="text-green-800 font-medium">File uploaded: {csvFile.name}</span>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Check className="w-5 h-5 text-green-600" />
+                      <span className="text-green-800 font-medium">File uploaded: {csvFile.name}</span>
+                    </div>
+                    <button
+                      onClick={handleRemoveFile}
+                      className="p-1 hover:bg-green-100 rounded transition-colors"
+                      title="Change file"
+                    >
+                      <X className="w-4 h-4 text-green-600" />
+                    </button>
+                  </div>
+                  <div className="mt-2">
+                    <button
+                      onClick={() => {
+                        // Trigger file input for new file
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = '.csv';
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0];
+                          if (file) {
+                            handleCSVFileSelect(file);
+                          }
+                        };
+                        input.click();
+                      }}
+                      className="text-green-700 text-sm hover:text-green-800 transition-colors underline"
+                    >
+                      Change file
+                    </button>
                   </div>
                 </div>
               )}
@@ -219,7 +268,7 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
 
         {/* Progressive Disclosure - Manual Helper */}
         {selectedMethod === 'manual' && (
-          <div className="bg-white rounded-xl border border-gray-200 p-4">
+          <div className="bg-white rounded-xl border border-gray-200 p-4 animate-fadeIn">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-green-600 text-sm">💡</span>
