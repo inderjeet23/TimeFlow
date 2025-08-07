@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { Upload, FileText, Download, Settings, Clock, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import InputMethodSelector from '@/components/InputMethodSelector';
+import MobileStepPicker from '@/components/MobileStepPicker';
+import ManualTimeEntry from '@/components/ManualTimeEntry';
 import InvoicePreview from '@/components/InvoicePreview';
 import InvoiceForm from '@/components/InvoiceForm';
 import MobileNavigation from '@/components/MobileNavigation';
@@ -17,6 +19,7 @@ export default function Home() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
   const [step, setStep] = useState<'upload' | 'configure' | 'preview'>('upload');
+  const [inputMethod, setInputMethod] = useState<'csv' | 'manual' | null>(null);
 
   const handleTimeEntriesComplete = (timeEntries: TimeEntry[]) => {
     // Convert to invoice items with default rate
@@ -80,6 +83,14 @@ export default function Home() {
     }
   };
 
+  const handleInputMethodSelect = (method: 'csv' | 'manual') => {
+    setInputMethod(method);
+    if (method === 'manual') {
+      // For manual entry, we'll show the manual entry form
+      // The mobile component will handle this differently
+    }
+  };
+
   const handleInvoiceUpdate = (updatedInvoice: InvoiceData) => {
     setInvoiceData(updatedInvoice);
   };
@@ -125,6 +136,22 @@ export default function Home() {
     return () => document.removeEventListener('keydown', handleKeyPress);
   }, [step, invoiceData]);
 
+  // Mobile Step 1: Show mobile step picker
+  if (step === 'upload') {
+    return (
+      <div className="min-h-screen">
+        {/* Mobile Navigation */}
+        <MobileNavigation currentStep={step} onStepChange={setStep} />
+        
+        {/* Mobile Step Picker */}
+        <MobileStepPicker 
+          onTimeEntriesComplete={handleTimeEntriesComplete}
+          onCSVUpload={handleCSVUpload}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       {/* Mobile Navigation */}
@@ -161,7 +188,6 @@ export default function Home() {
               <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 -z-10"></div>
               <div 
                 className={`absolute top-5 left-0 h-0.5 bg-blue-600 transition-all duration-500 -z-10 ${
-                  step === 'upload' ? 'w-0' : 
                   step === 'configure' ? 'w-1/2' : 'w-full'
                 }`}
               ></div>
@@ -170,24 +196,16 @@ export default function Home() {
               <div className="nav-step">
                 <div 
                   className={`nav-step-icon ${
-                    step === 'upload' 
-                      ? 'bg-blue-600 border-blue-600 text-white' 
-                      : step === 'configure' || step === 'preview'
+                    step === 'configure' || step === 'preview'
                       ? 'bg-green-500 border-green-500 text-white'
                       : 'bg-white border-gray-300 text-gray-400'
                   }`}
                 >
-                  {step === 'upload' ? (
-                    <Upload className="h-5 w-5" />
-                  ) : (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
                 </div>
-                <span className={`text-sm font-medium mt-2 ${
-                  step === 'upload' ? 'text-blue-600' : 'text-gray-600'
-                }`}>
+                <span className="text-sm font-medium mt-2 text-gray-600">
                   Add Time Data
                 </span>
               </div>
@@ -247,7 +265,6 @@ export default function Home() {
             {/* Step Description */}
             <div className="text-center mt-4">
               <p className="text-sm text-gray-600">
-                {step === 'upload' && 'Add your time tracking data via CSV upload or manual entry'}
                 {step === 'configure' && 'Configure your invoice details and rates'}
                 {step === 'preview' && 'Preview and download your professional invoice'}
               </p>
@@ -261,13 +278,6 @@ export default function Home() {
         </div>
 
         {/* Step Content */}
-        {step === 'upload' && (
-          <InputMethodSelector 
-            onTimeEntriesComplete={handleTimeEntriesComplete}
-            onCSVUpload={handleCSVUpload}
-          />
-        )}
-
         {step === 'configure' && invoiceData && (
           <div className="section-mobile">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
