@@ -104,33 +104,31 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
 
     setFormData(prevData => {
       const updatedInvoice = { ...prevData };
-      updatedInvoice.items[index].rate = rate;
-      updatedInvoice.items[index].amount = updatedInvoice.items[index].hours * rate;
+      const item = updatedInvoice.items[index];
+      item.rate = rate;
+      item.amount = item.hours * rate;
       
+      // Recalculate totals
       const totals = calculateTotals(updatedInvoice.items, updatedInvoice.taxRate);
       updatedInvoice.subtotal = totals.subtotal;
       updatedInvoice.taxAmount = totals.taxAmount;
       updatedInvoice.total = totals.total;
       
       onUpdate(updatedInvoice);
-
-      // Show rate application prompt if this is the first rate entry and there are multiple items
-      if (rate > 0 && prevData.items.length > 1 && lastRateApplied !== rate) {
-        const otherItemsNeedRate = prevData.items.some((item, i) => i !== index && item.rate === 0);
-        if (otherItemsNeedRate) {
-          setShowRatePrompt(true);
-          setLastRateApplied(rate);
-        }
-      }
-
       return updatedInvoice;
     });
-  }, [hasUserInteracted, onUpdate, lastRateApplied]);
+  }, [hasUserInteracted, onUpdate]);
 
   const handleRateInputChange = useCallback((index: number, value: string) => {
-    const rate = value === '' ? 0 : parseFloat(value) || 0;
+    const rate = parseFloat(value) || 0;
     handleItemRateChange(index, rate);
-  }, [handleItemRateChange]);
+    
+    // Show rate application prompt if this is a significant rate change
+    if (rate > 0 && rate !== lastRateApplied && formData.items.length > 1) {
+      setLastRateApplied(rate);
+      setShowRatePrompt(true);
+    }
+  }, [handleItemRateChange, lastRateApplied, formData.items.length]);
 
   const applyRateToAll = useCallback((rate: number) => {
     setFormData(prevData => {
@@ -141,6 +139,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
         amount: item.hours * rate
       }));
       
+      // Recalculate totals
       const totals = calculateTotals(updatedInvoice.items, updatedInvoice.taxRate);
       updatedInvoice.subtotal = totals.subtotal;
       updatedInvoice.taxAmount = totals.taxAmount;
@@ -168,7 +167,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
     required?: boolean;
   }) => (
     <div className="space-y-3">
-      <label className="block text-base font-semibold text-gray-700">
+      <label className="block text-base font-semibold text-foreground">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
@@ -176,7 +175,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-4 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+        className="w-full px-4 py-4 text-base border border-border bg-background text-foreground rounded-xl focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         required={required}
       />
     </div>
@@ -186,18 +185,18 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
     <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 lg:space-y-10">
       {/* Quick Start Options - Only show if user hasn't interacted */}
       {!hasUserInteracted && (
-        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 lg:p-8">
+        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 lg:p-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             <div className="flex-1">
-              <h4 className="text-xl font-semibold text-blue-900 mb-2">Quick Start</h4>
-              <p className="text-base text-blue-700">Generate an invoice with default settings in seconds</p>
+              <h4 className="text-xl font-semibold text-primary mb-2">Quick Start</h4>
+              <p className="text-base text-primary/80">Generate an invoice with default settings in seconds</p>
             </div>
             <button
               onClick={() => {
                 setUseDefaults(true);
                 onNext();
               }}
-              className="px-6 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-lg touch-target"
+              className="px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-xl hover:bg-primary/90 transition-colors text-lg touch-target"
             >
               Use Defaults & Continue
             </button>
@@ -206,8 +205,8 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       )}
 
       {/* Business Information */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6 lg:p-8 shadow-sm">
-        <h3 className="text-2xl font-semibold text-gray-900 mb-8">Business Information</h3>
+      <div className="bg-card rounded-2xl border border-border p-6 lg:p-8 shadow-sm">
+        <h3 className="text-2xl font-semibold text-foreground mb-8">Business Information</h3>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <InputField
             label="Business Name"
@@ -257,7 +256,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
 
       {/* Client Information */}
       <div className="card-mobile">
-        <h3 className="text-mobile-lg text-gray-900 mb-4">Client Information</h3>
+        <h3 className="text-mobile-lg text-foreground mb-4">Client Information</h3>
         <div className="grid-mobile-2">
           <InputField
             label="Client Name"
@@ -306,7 +305,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
 
       {/* Invoice Details */}
       <div className="card-mobile">
-        <h3 className="text-mobile-lg text-gray-900 mb-4">Invoice Details</h3>
+        <h3 className="text-mobile-lg text-foreground mb-4">Invoice Details</h3>
         <div className="grid-mobile-2 lg:grid-cols-3">
           <InputField
             label="Invoice Number"
@@ -338,9 +337,9 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
           onClick={() => setShowAdvanced(!showAdvanced)}
           className="flex items-center justify-between w-full text-left touch-target"
         >
-          <h3 className="text-mobile-lg text-gray-900">Advanced Settings</h3>
+          <h3 className="text-mobile-lg text-foreground">Advanced Settings</h3>
           <svg 
-            className={`w-5 h-5 text-gray-500 transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
+            className={`w-5 h-5 text-muted-foreground transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
             fill="none" 
             stroke="currentColor" 
             viewBox="0 0 24 24"
@@ -350,7 +349,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
         </button>
         
         {showAdvanced && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
+          <div className="mt-4 pt-4 border-t border-border">
             <div className="grid-mobile-2">
               <InputField
                 label="Tax Rate (%)"
@@ -360,14 +359,14 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
                 placeholder="0"
               />
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+                <label className="block text-sm font-medium text-foreground">
                   Invoice Terms
                 </label>
                 <textarea
                   value={formData.terms || ''}
                   onChange={(e) => handleInputChange('invoice', 'terms', e.target.value)}
                   placeholder="Net 30, payment due upon receipt, etc."
-                  className="input-mobile min-h-[80px] resize-none"
+                  className="input-mobile min-h-[80px] resize-none bg-background text-foreground border-border"
                   rows={3}
                 />
               </div>
@@ -379,19 +378,19 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       {/* Time Entries */}
       <div className="card-mobile">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
-          <h3 className="text-mobile-lg text-gray-900">Time Entries</h3>
-          <div className="text-sm text-gray-500">
+          <h3 className="text-mobile-lg text-foreground">Time Entries</h3>
+          <div className="text-sm text-muted-foreground">
             {formData.items.length} entries • {formData.items.reduce((sum, item) => sum + item.hours, 0).toFixed(1)} hours total
           </div>
         </div>
         
         <div className="space-y-4">
           {formData.items.map((item, index) => (
-            <div key={index} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div key={index} className="p-4 bg-muted/30 rounded-lg border border-border">
               <div className="grid-mobile lg:grid-cols-3 gap-4 items-start">
                 <div className="lg:col-span-2">
-                  <div className="font-medium text-gray-900 text-lg mb-2">{item.project}</div>
-                  <div className="text-sm text-gray-500 space-y-1">
+                  <div className="font-medium text-foreground text-lg mb-2">{item.project}</div>
+                  <div className="text-sm text-muted-foreground space-y-1">
                     <div className="flex items-center space-x-2">
                       <span>📅 {item.date}</span>
                       <span>⏱️ {item.hours} hours</span>
@@ -406,18 +405,18 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
                 </div>
                 <div className="flex flex-col space-y-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1">Rate ($/hr)</label>
+                    <label className="block text-xs font-medium text-foreground mb-1">Rate ($/hr)</label>
                     <input
                       type="number"
                       value={item.rate === 0 ? '' : item.rate.toString()}
                       onChange={(e) => handleRateInputChange(index, e.target.value)}
-                      className="input-mobile text-sm"
+                      className="input-mobile text-sm bg-background text-foreground border-border"
                       placeholder="75"
                     />
                   </div>
                   <div className="text-right">
-                    <div className="text-xs text-gray-500">Total</div>
-                    <div className="font-semibold text-gray-900 text-lg">
+                    <div className="text-xs text-muted-foreground">Total</div>
+                    <div className="font-semibold text-foreground text-lg">
                       ${item.amount.toFixed(2)}
                     </div>
                   </div>
@@ -430,49 +429,49 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
 
       {/* Totals Summary */}
       <div className="card-mobile">
-        <h3 className="text-mobile-lg text-gray-900 mb-4">Summary</h3>
+        <h3 className="text-mobile-lg text-foreground mb-4">Summary</h3>
         <div className="space-y-3">
           <div className="flex justify-between">
-            <span className="text-gray-600">Subtotal:</span>
-            <span className="font-medium">${formData.subtotal.toFixed(2)}</span>
+            <span className="text-muted-foreground">Subtotal:</span>
+            <span className="font-medium text-foreground">${formData.subtotal.toFixed(2)}</span>
           </div>
           {formData.taxAmount > 0 && (
             <div className="flex justify-between">
-              <span className="text-gray-600">Tax ({formData.taxRate}%):</span>
-              <span className="font-medium">${formData.taxAmount.toFixed(2)}</span>
+              <span className="text-muted-foreground">Tax ({formData.taxRate}%):</span>
+              <span className="font-medium text-foreground">${formData.taxAmount.toFixed(2)}</span>
             </div>
           )}
-          <div className="flex justify-between text-lg font-semibold border-t pt-3">
-            <span>Total:</span>
-            <span>${formData.total.toFixed(2)}</span>
+          <div className="flex justify-between text-lg font-semibold border-t border-border pt-3">
+            <span className="text-foreground">Total:</span>
+            <span className="text-foreground">${formData.total.toFixed(2)}</span>
           </div>
         </div>
       </div>
 
       {/* Rate Application Prompt */}
       {showRatePrompt && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full animate-fadeIn">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+          <div className="bg-card rounded-xl p-6 max-w-sm w-full animate-fadeIn border border-border">
             <div className="text-center">
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 text-xl">💡</span>
+              <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <span className="text-primary text-xl">💡</span>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 Apply ${lastRateApplied}/hr to all entries?
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-muted-foreground mb-6">
                 This will save you time by applying the same rate to all {formData.items.length} time entries.
               </p>
               <div className="flex space-x-3">
                 <button
                   onClick={() => setShowRatePrompt(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                  className="flex-1 px-4 py-2 text-muted-foreground bg-muted rounded-lg hover:bg-muted/80 transition-colors"
                 >
                   No, thanks
                 </button>
                 <button
                   onClick={() => applyRateToAll(lastRateApplied!)}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
                 >
                   Apply to all
                 </button>
@@ -486,10 +485,10 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
       <div className="card-mobile">
         <div className="flex flex-col space-y-4">
           <div className="space-y-2">
-            <div className="text-sm text-gray-500">
+            <div className="text-sm text-muted-foreground">
               💡 Tip: All fields marked with * are required
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-muted-foreground/70">
               You can always edit these details later in the preview
             </div>
           </div>
