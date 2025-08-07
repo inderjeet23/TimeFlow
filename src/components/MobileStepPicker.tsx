@@ -1,8 +1,7 @@
 'use client';
 
-
 import { useState, useEffect, useRef } from 'react';
-import { Upload, Edit3, Check, ChevronDown, X } from 'lucide-react';
+import { Upload, Edit3, Check, ChevronDown, X, HelpCircle, Zap, Users, Calculator } from 'lucide-react';
 import { TimeEntry } from '@/types';
 import ManualTimeEntry from './ManualTimeEntry';
 
@@ -19,6 +18,7 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
   const [showCompare, setShowCompare] = useState(false);
   const [currentView, setCurrentView] = useState<View>('picker');
   const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
   const csvSectionRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to CSV section when selected
@@ -95,24 +95,40 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
           </div>
         </div>
 
-        {/* Page Title */}
+        {/* Page Title with Value Proposition */}
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-2">
+          <h1 className="text-2xl font-bold text-foreground mb-3">
             How do you want to add time?
           </h1>
-          <p className="text-base text-muted-foreground">
-            Pick one option.
+          <p className="text-base text-muted-foreground mb-4">
+            Generate professional invoices from your time logs in minutes—no manual math, no hassle.
           </p>
+          
+          {/* Benefits Summary */}
+          <div className="flex flex-wrap justify-center gap-4 mb-4">
+            <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+              <Upload className="h-3 w-3 text-primary" />
+              <span>Easy imports</span>
+            </div>
+            <div className="flex items-center space-x-1 text-xs text-muted-foreground">
+              <Zap className="h-3 w-3 text-primary" />
+              <span>Fast setup</span>
+            </div>
+            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
+              <Calculator className="h-3 w-3 text-primary" />
+              <span>Smart calculations</span>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="px-4 py-6 space-y-4">
+      <div className="px-4 py-6 space-y-6">
         {/* Option Cards */}
-        <div className="space-y-3">
-          {/* CSV Upload Card */}
+        <div className="space-y-4">
+          {/* CSV Upload Card - Power Users */}
           <div 
-            className={`rounded-xl border p-4 flex items-start gap-3 cursor-pointer transition-all duration-150 ${
+            className={`rounded-xl border p-6 flex items-start gap-4 cursor-pointer transition-all duration-150 ${
               selectedMethod === 'csv' 
                 ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
                 : 'border-border bg-card hover:border-border/80'
@@ -120,31 +136,43 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
             onClick={() => setSelectedMethod('csv')}
           >
             <div className="flex-shrink-0">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
                 selectedMethod === 'csv' ? 'bg-primary' : 'bg-muted'
               }`}>
                 {selectedMethod === 'csv' ? (
-                  <Check className="w-5 h-5 text-primary-foreground" />
+                  <Check className="w-6 h-6 text-primary-foreground" />
                 ) : (
-                  <Upload className="w-5 h-5 text-muted-foreground" />
+                  <Upload className="w-6 h-6 text-muted-foreground" />
                 )}
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-foreground mb-1">
-                Upload CSV file
-              </h3>
-              <p className="text-base text-muted-foreground mb-1">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Upload CSV file
+                </h3>
+                <div className="bg-purple-500/20 text-purple-600 px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
+                  <Users className="h-3 w-3" />
+                  <span>Power Users</span>
+                </div>
+              </div>
+              <p className="text-base text-muted-foreground mb-2">
                 Fast if you already track time
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mb-3">
                 Works with Toggl, Clockify, Harvest.
               </p>
+              
+              {/* Prominent CTA Button */}
+              <button className="w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-semibold text-base hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 shadow-md hover:shadow-lg">
+                Choose CSV Upload
+                <ChevronDown className="w-4 h-4 ml-2 inline" />
+              </button>
             </div>
           </div>
 
           {/* Compare Methods Link - positioned between cards */}
-          <div className="text-center py-2">
+          <div className="text-center py-3">
             <button
               onClick={() => setShowCompare(!showCompare)}
               className="text-primary text-sm hover:text-primary/80 transition-colors flex items-center justify-center mx-auto space-x-1"
@@ -154,36 +182,48 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
             </button>
           </div>
 
-          {/* Manual Entry Card */}
+          {/* Manual Entry Card - Quick Start */}
           <div 
-            className={`rounded-xl border p-4 flex items-start gap-3 cursor-pointer transition-all duration-150 ${
+            className={`rounded-xl border p-6 flex items-start gap-4 cursor-pointer transition-all duration-150 ${
               selectedMethod === 'manual' 
-                ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
+                ? 'border-green-500 ring-2 ring-green-500/20 bg-green-500/5' 
                 : 'border-border bg-card hover:border-border/80'
             }`}
             onClick={() => setSelectedMethod('manual')}
           >
             <div className="flex-shrink-0">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                selectedMethod === 'manual' ? 'bg-primary' : 'bg-muted'
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                selectedMethod === 'manual' ? 'bg-green-500' : 'bg-muted'
               }`}>
                 {selectedMethod === 'manual' ? (
-                  <Check className="w-5 h-5 text-primary-foreground" />
+                  <Check className="w-6 h-6 text-white" />
                 ) : (
-                  <Edit3 className="w-5 h-5 text-muted-foreground" />
+                  <Edit3 className="w-6 h-6 text-muted-foreground" />
                 )}
               </div>
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-lg font-semibold text-foreground mb-1">
-                Manual entry
-              </h3>
-              <p className="text-base text-muted-foreground mb-1">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-semibold text-foreground">
+                  Manual entry
+                </h3>
+                <div className="bg-green-500/20 text-green-600 px-2 py-1 rounded-full text-xs font-medium flex items-center space-x-1">
+                  <Zap className="h-3 w-3" />
+                  <span>Quick Start</span>
+                </div>
+              </div>
+              <p className="text-base text-muted-foreground mb-2">
                 Simple for a few entries
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground mb-3">
                 Type in your time data directly.
               </p>
+              
+              {/* Prominent CTA Button */}
+              <button className="w-full bg-green-500 text-white py-3 px-4 rounded-lg font-semibold text-base hover:bg-green-600 active:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                Choose Manual Entry
+                <ChevronDown className="w-4 h-4 ml-2 inline" />
+              </button>
             </div>
           </div>
         </div>
@@ -192,12 +232,19 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
         {selectedMethod === 'csv' && (
           <div 
             ref={csvSectionRef}
-            className="bg-card rounded-xl border border-border p-4 space-y-3 animate-fadeIn"
+            className="bg-card rounded-xl border border-border p-6 space-y-4 animate-fadeIn"
           >
             <div className="flex items-center justify-between">
-              <h4 className="font-medium text-foreground">Upload your CSV file</h4>
+              <h4 className="font-medium text-foreground text-lg">Upload your CSV file</h4>
+              <button
+                onClick={() => setShowHelp(true)}
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                title="Get help"
+              >
+                <HelpCircle className="h-5 w-5 text-muted-foreground" />
+              </button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-4">
               {!csvFile ? (
                 <button
                   onClick={() => {
@@ -213,12 +260,12 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
                     };
                     input.click();
                   }}
-                  className="w-full h-12 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 active:bg-primary/80 transition-colors"
+                  className="w-full h-14 bg-primary text-primary-foreground rounded-lg font-semibold text-lg hover:bg-primary/90 active:bg-primary/80 transition-colors shadow-md hover:shadow-lg"
                 >
                   Upload CSV
                 </button>
               ) : (
-                <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
                       <Check className="w-5 h-5 text-green-500" />
@@ -270,7 +317,7 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
                   document.body.removeChild(link);
                   URL.revokeObjectURL(url);
                 }}
-                className="w-full text-primary text-center text-base hover:text-primary/80 transition-colors"
+                className="w-full text-primary text-center text-base hover:text-primary/80 transition-colors py-2"
               >
                 Download sample CSV
               </button>
@@ -280,17 +327,24 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
 
         {/* Progressive Disclosure - Manual Helper */}
         {selectedMethod === 'manual' && (
-          <div className="bg-card rounded-xl border border-border p-4 animate-fadeIn">
+          <div className="bg-card rounded-xl border border-border p-6 animate-fadeIn">
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 bg-green-500/20 rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-green-500 text-sm">💡</span>
               </div>
-              <div>
-                <h4 className="font-medium text-foreground mb-1">Perfect for quick invoices</h4>
+              <div className="flex-1">
+                <h4 className="font-medium text-foreground mb-2">Perfect for quick invoices</h4>
                 <p className="text-base text-muted-foreground">
                   Real-time totals. No file needed.
                 </p>
               </div>
+              <button
+                onClick={() => setShowHelp(true)}
+                className="p-2 hover:bg-muted rounded-lg transition-colors"
+                title="Get help"
+              >
+                <HelpCircle className="h-5 w-5 text-muted-foreground" />
+              </button>
             </div>
           </div>
         )}
@@ -340,6 +394,42 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
             </div>
           </div>
         )}
+
+        {/* Help Modal */}
+        {showHelp && (
+          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-card rounded-xl border border-border shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-foreground">Help & Support</h3>
+                  <button
+                    onClick={() => setShowHelp(false)}
+                    className="p-2 hover:bg-muted rounded-lg transition-colors"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div className="space-y-4 text-sm text-muted-foreground">
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">CSV File Format</h4>
+                    <p>Your CSV should include columns for: Client, Project, Date, Duration, Notes, and Billable status.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">Manual Entry Tips</h4>
+                    <p>Enter time in decimal format (e.g., 2.5 for 2 hours 30 minutes). You can add multiple entries and edit them before proceeding.</p>
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-foreground mb-2">Need More Help?</h4>
+                    <p>Check our documentation or contact support for additional assistance with file formatting and data entry.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Sticky CTA */}
@@ -347,9 +437,9 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
         <button
           onClick={handleContinue}
           disabled={!selectedMethod || (selectedMethod === 'csv' && !csvFile)}
-          className={`w-full h-12 rounded-lg font-medium transition-colors ${
+          className={`w-full h-14 rounded-lg font-semibold text-lg transition-all duration-200 ${
             selectedMethod && (selectedMethod !== 'csv' || csvFile)
-              ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80' 
+              ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' 
               : 'bg-muted text-muted-foreground cursor-not-allowed'
           }`}
         >
