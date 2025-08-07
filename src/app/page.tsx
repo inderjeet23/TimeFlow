@@ -195,9 +195,9 @@ export default function Home() {
           <div className="max-w-2xl mx-auto">
             <div className="flex items-center justify-between relative">
               {/* Progress Line */}
-              <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200 -z-10"></div>
+              <div className="absolute top-5 left-0 right-0 h-0.5 bg-border -z-10"></div>
               <div 
-                className={`absolute top-5 left-0 h-0.5 bg-blue-600 transition-all duration-500 -z-10 ${
+                className={`absolute top-5 left-0 h-0.5 bg-primary transition-all duration-500 -z-10 ${
                   step === 'configure' ? 'w-1/2' : 'w-full'
                 }`}
               ></div>
@@ -208,14 +208,14 @@ export default function Home() {
                   className={`nav-step-icon ${
                     step === 'configure' || step === 'preview'
                       ? 'bg-green-500 border-green-500 text-white'
-                      : 'bg-white border-gray-300 text-gray-400'
+                      : 'bg-card border-border text-muted-foreground'
                   }`}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                   </svg>
                 </div>
-                <span className="text-sm font-medium mt-2 text-gray-600">
+                <span className="text-sm font-medium mt-2 text-muted-foreground">
                   Add Time Data
                 </span>
               </div>
@@ -225,10 +225,10 @@ export default function Home() {
                 <div 
                   className={`nav-step-icon ${
                     step === 'configure' 
-                      ? 'bg-blue-600 border-blue-600 text-white' 
+                      ? 'bg-primary border-primary text-primary-foreground' 
                       : step === 'preview'
                       ? 'bg-green-500 border-green-500 text-white'
-                      : 'bg-white border-gray-300 text-gray-400'
+                      : 'bg-card border-border text-muted-foreground'
                   }`}
                 >
                   {step === 'configure' ? (
@@ -242,8 +242,8 @@ export default function Home() {
                   )}
                 </div>
                 <span className={`text-sm font-medium mt-2 ${
-                  step === 'configure' ? 'text-blue-600' : 
-                  step === 'preview' ? 'text-gray-600' : 'text-gray-400'
+                  step === 'configure' ? 'text-primary' : 
+                  step === 'preview' ? 'text-muted-foreground' : 'text-muted-foreground'
                 }`}>
                   Configure
                 </span>
@@ -254,8 +254,8 @@ export default function Home() {
                 <div 
                   className={`nav-step-icon ${
                     step === 'preview' 
-                      ? 'bg-blue-600 border-blue-600 text-white' 
-                      : 'bg-white border-gray-300 text-gray-400'
+                      ? 'bg-primary border-primary text-primary-foreground' 
+                      : 'bg-card border-border text-muted-foreground'
                   }`}
                 >
                   {step === 'preview' ? (
@@ -265,7 +265,7 @@ export default function Home() {
                   )}
                 </div>
                 <span className={`text-sm font-medium mt-2 ${
-                  step === 'preview' ? 'text-blue-600' : 'text-gray-400'
+                  step === 'preview' ? 'text-primary' : 'text-muted-foreground'
                 }`}>
                   Preview & Download
                 </span>
