@@ -219,6 +219,12 @@
     @apply min-h-[44px];
   }
 
+  /* Fix date input width on mobile */
+  input[type="date"] {
+    max-width: 100%;
+    width: 100% !important;
+  }
+
   /* Improve spacing on mobile */
   .space-y-mobile > * + * {
     @apply mt-4;
@@ -242,6 +248,11 @@
   /* Show elements only on mobile */
   .mobile-only {
     @apply block sm:hidden;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  input, select, textarea {
+    font-size: 16px !important;
   }
 }
 
