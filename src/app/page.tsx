@@ -148,6 +148,16 @@ export default function Home() {
           onTimeEntriesComplete={handleTimeEntriesComplete}
           onCSVUpload={handleCSVUpload}
         />
+        
+        {/* Desktop Input Method Selector */}
+        <div className="hidden lg:block">
+          <div className="container-mobile py-6 sm:py-8 lg:pt-8">
+            <InputMethodSelector 
+              onTimeEntriesComplete={handleTimeEntriesComplete}
+              onCSVUpload={handleCSVUpload}
+            />
+          </div>
+        </div>
       </div>
     );
   }

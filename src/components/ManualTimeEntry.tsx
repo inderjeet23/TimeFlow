@@ -172,7 +172,7 @@ export default function ManualTimeEntry({ onTimeEntriesComplete }: ManualTimeEnt
                     type="date"
                     value={entry.date}
                     onChange={(e) => updateTimeEntry(index, 'date', e.target.value)}
-                    className="input-mobile pl-10"
+                    className="input-mobile pl-10 w-full min-w-0"
                     required
                   />
                 </div>
