@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { InvoiceData } from '@/types';
 import { calculateTotals, extractMostCommonClient } from '@/lib/csv-parser';
 import { cn } from '@/lib/utils';
@@ -66,84 +66,91 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
     }
   }, [formData.items, formData.client.name]);
 
-  const handleInputChange = (section: 'business' | 'client' | 'invoice', field: string, value: string | number) => {
+  const handleInputChange = useCallback((section: 'business' | 'client' | 'invoice', field: string, value: string | number) => {
     // Mark that user has interacted with the form
     if (!hasUserInteracted) {
       setHasUserInteracted(true);
     }
 
-    const updatedInvoice = { ...formData };
-    
-    if (section === 'business') {
-      updatedInvoice.business = { ...updatedInvoice.business, [field]: value };
-    } else if (section === 'client') {
-      updatedInvoice.client = { ...updatedInvoice.client, [field]: value };
-    } else {
-      (updatedInvoice as any)[field] = value;
+    setFormData(prevData => {
+      const updatedInvoice = { ...prevData };
+      
+      if (section === 'business') {
+        updatedInvoice.business = { ...updatedInvoice.business, [field]: value };
+      } else if (section === 'client') {
+        updatedInvoice.client = { ...updatedInvoice.client, [field]: value };
+      } else {
+        (updatedInvoice as any)[field] = value;
+      }
+
+      // Recalculate totals if rate or tax rate changes
+      if (field === 'taxRate') {
+        const totals = calculateTotals(updatedInvoice.items, value as number);
+        updatedInvoice.taxRate = value as number;
+        updatedInvoice.taxAmount = totals.taxAmount;
+        updatedInvoice.total = totals.total;
+      }
+
+      onUpdate(updatedInvoice);
+      return updatedInvoice;
+    });
+  }, [hasUserInteracted, onUpdate]);
+
+  const handleItemRateChange = useCallback((index: number, rate: number) => {
+    // Mark that user has interacted with the form
+    if (!hasUserInteracted) {
+      setHasUserInteracted(true);
     }
 
-    // Recalculate totals if rate or tax rate changes
-    if (field === 'taxRate') {
-      const totals = calculateTotals(updatedInvoice.items, value as number);
-      updatedInvoice.taxRate = value as number;
+    setFormData(prevData => {
+      const updatedInvoice = { ...prevData };
+      updatedInvoice.items[index].rate = rate;
+      updatedInvoice.items[index].amount = updatedInvoice.items[index].hours * rate;
+      
+      const totals = calculateTotals(updatedInvoice.items, updatedInvoice.taxRate);
+      updatedInvoice.subtotal = totals.subtotal;
       updatedInvoice.taxAmount = totals.taxAmount;
       updatedInvoice.total = totals.total;
-    }
+      
+      onUpdate(updatedInvoice);
 
-    setFormData(updatedInvoice);
-    onUpdate(updatedInvoice);
-  };
-
-  const handleItemRateChange = (index: number, rate: number) => {
-    // Mark that user has interacted with the form
-    if (!hasUserInteracted) {
-      setHasUserInteracted(true);
-    }
-
-    const updatedInvoice = { ...formData };
-    updatedInvoice.items[index].rate = rate;
-    updatedInvoice.items[index].amount = updatedInvoice.items[index].hours * rate;
-    
-    const totals = calculateTotals(updatedInvoice.items, updatedInvoice.taxRate);
-    updatedInvoice.subtotal = totals.subtotal;
-    updatedInvoice.taxAmount = totals.taxAmount;
-    updatedInvoice.total = totals.total;
-    
-    setFormData(updatedInvoice);
-    onUpdate(updatedInvoice);
-
-    // Show rate application prompt if this is the first rate entry and there are multiple items
-    if (rate > 0 && formData.items.length > 1 && lastRateApplied !== rate) {
-      const otherItemsNeedRate = formData.items.some((item, i) => i !== index && item.rate === 0);
-      if (otherItemsNeedRate) {
-        setShowRatePrompt(true);
-        setLastRateApplied(rate);
+      // Show rate application prompt if this is the first rate entry and there are multiple items
+      if (rate > 0 && prevData.items.length > 1 && lastRateApplied !== rate) {
+        const otherItemsNeedRate = prevData.items.some((item, i) => i !== index && item.rate === 0);
+        if (otherItemsNeedRate) {
+          setShowRatePrompt(true);
+          setLastRateApplied(rate);
+        }
       }
-    }
-  };
 
-  const handleRateInputChange = (index: number, value: string) => {
+      return updatedInvoice;
+    });
+  }, [hasUserInteracted, onUpdate, lastRateApplied]);
+
+  const handleRateInputChange = useCallback((index: number, value: string) => {
     const rate = value === '' ? 0 : parseFloat(value) || 0;
     handleItemRateChange(index, rate);
-  };
+  }, [handleItemRateChange]);
 
-  const applyRateToAll = (rate: number) => {
-    const updatedInvoice = { ...formData };
-    updatedInvoice.items = updatedInvoice.items.map(item => ({
-      ...item,
-      rate: rate,
-      amount: item.hours * rate
-    }));
-    
-    const totals = calculateTotals(updatedInvoice.items, updatedInvoice.taxRate);
-    updatedInvoice.subtotal = totals.subtotal;
-    updatedInvoice.taxAmount = totals.taxAmount;
-    updatedInvoice.total = totals.total;
-    
-    setFormData(updatedInvoice);
-    onUpdate(updatedInvoice);
-    setShowRatePrompt(false);
-  };
+  const applyRateToAll = useCallback((rate: number) => {
+    setFormData(prevData => {
+      const updatedInvoice = { ...prevData };
+      updatedInvoice.items = updatedInvoice.items.map(item => ({
+        ...item,
+        rate: rate,
+        amount: item.hours * rate
+      }));
+      
+      const totals = calculateTotals(updatedInvoice.items, updatedInvoice.taxRate);
+      updatedInvoice.subtotal = totals.subtotal;
+      updatedInvoice.taxAmount = totals.taxAmount;
+      updatedInvoice.total = totals.total;
+      
+      onUpdate(updatedInvoice);
+      setShowRatePrompt(false);
+      return updatedInvoice;
+    });
+  }, [onUpdate]);
 
   const InputField = ({ 
     label, 
@@ -160,8 +167,8 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
     type?: string;
     required?: boolean;
   }) => (
-    <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+    <div className="space-y-3">
+      <label className="block text-base font-semibold text-gray-700">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <input
@@ -169,37 +176,39 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="input-mobile"
+        className="w-full px-4 py-4 text-base border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
         required={required}
       />
     </div>
   );
 
   return (
-    <div className="section-mobile">
-      {/* Quick Start Options */}
-      <div className="card-mobile bg-blue-50 border-blue-200">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
-          <div className="flex-1">
-            <h4 className="font-medium text-blue-900">Quick Start</h4>
-            <p className="text-sm text-blue-700">Generate an invoice with default settings in seconds</p>
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 lg:space-y-10">
+      {/* Quick Start Options - Only show if user hasn't interacted */}
+      {!hasUserInteracted && (
+        <div className="bg-blue-50 border border-blue-200 rounded-2xl p-6 lg:p-8">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+            <div className="flex-1">
+              <h4 className="text-xl font-semibold text-blue-900 mb-2">Quick Start</h4>
+              <p className="text-base text-blue-700">Generate an invoice with default settings in seconds</p>
+            </div>
+            <button
+              onClick={() => {
+                setUseDefaults(true);
+                onNext();
+              }}
+              className="px-6 py-4 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors text-lg touch-target"
+            >
+              Use Defaults & Continue
+            </button>
           </div>
-          <button
-            onClick={() => {
-              setUseDefaults(true);
-              onNext();
-            }}
-            className="btn-primary text-sm w-full sm:w-auto"
-          >
-            Use Defaults & Continue
-          </button>
         </div>
-      </div>
+      )}
 
       {/* Business Information */}
-      <div className="card-mobile">
-        <h3 className="text-mobile-lg text-gray-900 mb-4">Business Information</h3>
-        <div className="grid-mobile-2">
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 lg:p-8 shadow-sm">
+        <h3 className="text-2xl font-semibold text-gray-900 mb-8">Business Information</h3>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
           <InputField
             label="Business Name"
             value={formData.business.name}

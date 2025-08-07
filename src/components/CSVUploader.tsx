@@ -30,32 +30,32 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
   });
 
   return (
-    <div className="w-full max-w-4xl mx-auto">
+    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <div
         {...getRootProps()}
         className={cn(
-          "upload-area-mobile",
-          isDragActive && !isDragReject && "border-blue-500 bg-blue-50 scale-105",
+          "border-2 border-dashed rounded-2xl p-8 lg:p-12 text-center cursor-pointer transition-all duration-300 touch-target",
+          isDragActive && !isDragReject && "border-blue-500 bg-blue-50 scale-105 shadow-lg",
           isDragReject && "border-red-500 bg-red-50",
-          !isDragActive && "border-gray-300 hover:border-blue-400 hover:bg-blue-50"
+          !isDragActive && "border-gray-300 hover:border-blue-400 hover:bg-blue-50 hover:shadow-md"
         )}
       >
         <input {...getInputProps()} />
         
-        <div className="flex flex-col items-center space-y-4 sm:space-y-6">
+        <div className="flex flex-col items-center space-y-6 lg:space-y-8">
           {isDragReject ? (
-            <AlertCircle className="h-12 w-12 sm:h-16 sm:w-16 text-red-500" />
+            <AlertCircle className="h-16 w-16 lg:h-20 lg:w-20 text-red-500" />
           ) : (
             <div className="relative">
-              <Upload className="h-12 w-12 sm:h-16 sm:w-16 text-blue-500" />
+              <Upload className="h-16 w-16 lg:h-20 lg:w-20 text-blue-500" />
               <div className="absolute -top-2 -right-2 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
                 <span className="text-xs font-bold text-blue-600">+</span>
               </div>
             </div>
           )}
           
-          <div className="space-y-2 sm:space-y-3">
-            <h3 className="text-xl sm:text-2xl font-bold text-gray-900">
+          <div className="space-y-4">
+            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900">
               {isDragActive 
                 ? isDragReject 
                   ? 'Invalid file type' 
@@ -64,7 +64,7 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
               }
             </h3>
             
-            <p className="text-base sm:text-lg text-gray-600">
+            <p className="text-lg lg:text-xl text-gray-600 leading-relaxed">
               {isDragReject 
                 ? 'Please upload a valid CSV file'
                 : 'Drag and drop your CSV file here, or click to browse'
@@ -73,8 +73,8 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
           </div>
           
           {!isDragActive && (
-            <div className="flex items-center space-x-2 text-sm sm:text-base text-gray-500">
-              <FileText className="h-4 w-4 sm:h-5 sm:w-5" />
+            <div className="flex items-center space-x-3 text-base lg:text-lg text-gray-500">
+              <FileText className="h-5 w-5 lg:h-6 lg:w-6" />
               <span>Supports: Toggl, Clockify, Harvest, and more</span>
             </div>
           )}
@@ -82,44 +82,44 @@ export default function CSVUploader({ onUpload }: CSVUploaderProps) {
       </div>
       
       {/* Supported Formats & Examples */}
-      <div className="mt-6 sm:mt-8 grid-mobile md:grid-cols-2 gap-6">
+      <div className="mt-8 lg:mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
         {/* Supported Tools */}
-        <div className="card-mobile">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">Supported Time Tracking Tools</h4>
-          <div className="space-y-3">
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-red-100 rounded flex items-center justify-center flex-shrink-0">
-                <span className="text-red-600 font-bold text-sm">T</span>
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 lg:p-8 shadow-sm">
+          <h4 className="text-xl lg:text-2xl font-semibold text-gray-900 mb-6">Supported Time Tracking Tools</h4>
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl touch-target">
+              <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-red-600 font-bold text-lg">T</span>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-gray-900">Toggl</div>
-                <div className="text-sm text-gray-500">Export from Reports → Detailed</div>
+                <div className="font-semibold text-gray-900 text-lg">Toggl</div>
+                <div className="text-base text-gray-500">Export from Reports → Detailed</div>
               </div>
             </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center flex-shrink-0">
-                <span className="text-blue-600 font-bold text-sm">C</span>
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl touch-target">
+              <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-blue-600 font-bold text-lg">C</span>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-gray-900">Clockify</div>
-                <div className="text-sm text-gray-500">Export from Reports → Detailed</div>
+                <div className="font-semibold text-gray-900 text-lg">Clockify</div>
+                <div className="text-base text-gray-500">Export from Reports → Detailed</div>
               </div>
             </div>
-            <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center flex-shrink-0">
-                <span className="text-green-600 font-bold text-sm">H</span>
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl touch-target">
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-green-600 font-bold text-lg">H</span>
               </div>
               <div className="flex-1 min-w-0">
-                <div className="font-medium text-gray-900">Harvest</div>
-                <div className="text-sm text-gray-500">Export from Reports → Detailed</div>
+                <div className="font-semibold text-gray-900 text-lg">Harvest</div>
+                <div className="text-base text-gray-500">Export from Reports → Detailed</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Sample Format */}
-        <div className="card-mobile">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 space-y-2 sm:space-y-0">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 lg:p-8 shadow-sm">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 space-y-4 lg:space-y-0">
             <h4 className="text-lg font-semibold text-gray-900">Expected CSV Format</h4>
             <button
               onClick={() => {
