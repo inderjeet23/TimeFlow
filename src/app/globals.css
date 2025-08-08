@@ -146,11 +146,11 @@
 
   /* Mobile progress indicators */
   .progress-mobile {
-    @apply w-full h-1 bg-gray-200 rounded-full overflow-hidden;
+    @apply w-full h-1 bg-muted rounded-full overflow-hidden;
   }
 
   .progress-fill {
-    @apply h-full bg-blue-600 transition-all duration-500 ease-out;
+    @apply h-full bg-primary transition-all duration-500 ease-out;
   }
 
   /* Mobile grid layouts */
@@ -186,7 +186,7 @@
 
   /* Mobile upload areas */
   .upload-area-mobile {
-    @apply border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-gray-400 transition-colors cursor-pointer;
+    @apply border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-border/80 transition-colors cursor-pointer;
   }
 
   /* Mobile animations */
