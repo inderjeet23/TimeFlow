@@ -1,3 +1,10 @@
+export type User = {
+  id: string;
+  email: string;
+  invoiceCount: number;
+  subscription: 'free' | 'paid';
+};
+
 export interface TimeEntry {
   client: string;
   project: string;
@@ -79,4 +86,4 @@ export interface InvoiceSettings {
   invoicePrefix: string;
   autoNumbering: boolean;
   watermark: boolean;
-} 
+}

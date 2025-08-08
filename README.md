@@ -121,13 +121,24 @@ PDF styling and layout can be customized in `src/lib/pdf-generator.ts`. The curr
 
 ## 🚀 Deployment
 
-### Vercel (Recommended)
+### Deployment
+
+#### Netlify (Next.js 14)
+This repo includes a `netlify.toml` configured with the official `@netlify/plugin-nextjs` and Node 20.
+
+1. Set environment variables in Netlify:
+   - `NEXTAUTH_URL` (e.g. `https://<site>.netlify.app`)
+   - `NEXTAUTH_SECRET`
+   - `NEXT_PUBLIC_URL` (same as site URL)
+   - `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`
+2. Build command: `npm run build`
+3. Publish directory: auto-managed by the plugin
+
+#### Vercel
 1. Push your code to GitHub
 2. Connect your repository to Vercel
-3. Deploy automatically
-
-### Other Platforms
-The app is a standard Next.js application and can be deployed to any platform that supports Node.js.
+3. Add the same environment variables as above
+4. Deploy
 
 ## 📝 License
 

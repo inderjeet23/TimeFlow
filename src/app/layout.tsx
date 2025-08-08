@@ -1,3 +1,4 @@
+import { SessionProvider } from "next-auth/react"
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ThemeProvider } from '@/components/ThemeProvider'
@@ -25,11 +26,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ThemeProvider>
-          <div className="min-h-screen bg-background transition-colors duration-300">
-            {children}
-          </div>
-        </ThemeProvider>
+        <SessionProvider>
+          <ThemeProvider>
+            <div className="min-h-screen bg-background transition-colors duration-300">
+              {children}
+            </div>
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSession, signIn, signOut } from "next-auth/react"
 import { Upload, FileText, Download, Settings, Clock, Star, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import InputMethodSelector from '@/components/InputMethodSelector';
@@ -16,6 +17,7 @@ import { generateInvoicePDF } from '@/lib/pdf-generator';
 import { generateInvoiceNumber, calculateDueDate, downloadBlob } from '@/lib/utils';
 
 export default function Home() {
+  const { data: session } = useSession()
   const [invoice, setInvoice] = useState<InvoiceData>({
     id: '',
     business: { name: '', email: '', address: '', city: '', state: '', zipCode: '', country: '' },
@@ -97,6 +99,13 @@ export default function Home() {
   const handleGeneratePDF = async () => {
     if (!invoice) return;
 
+    if (session && session.user.invoiceCount >= 3 && session.user.subscription === 'free') {
+      alert('You have reached your free invoice limit. Please upgrade to create more invoices.');
+      // Redirect to upgrade page
+      window.location.href = '/upgrade';
+      return;
+    }
+
     // setIsGenerating(true); // This state was removed, so this line is no longer needed.
     try {
       const pdfBytes = await generateInvoicePDF(invoice);
@@ -104,6 +113,18 @@ export default function Home() {
       downloadBlob(blob, `invoice-${invoice.invoiceNumber}.pdf`);
       setShowSuccess(true);
       setTimeout(() => setShowSuccess(false), 3000);
+
+      if (session) {
+        // This is a simplified way to update the invoice count.
+        // In a real app, you'd want to do this on the backend.
+        const res = await fetch('/api/user/increment-invoice-count', {
+          method: 'POST',
+        });
+        if (res.ok) {
+          const data = await res.json();
+          session.user.invoiceCount = data.invoiceCount;
+        }
+      }
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Error generating PDF. Please try again.');
@@ -158,13 +179,23 @@ export default function Home() {
               </div>
               <div className="flex items-center space-x-3 sm:space-x-4">
                 <ThemeToggle />
-                <span className="text-sm text-muted-foreground hidden sm:block">Free Plan</span>
-                <Link 
-                  href="/upgrade"
-                  className="btn-secondary text-sm px-3 py-2 sm:px-4"
-                >
-                  Upgrade
-                </Link>
+                {session ? (
+                  <>
+                    <span className="text-sm text-muted-foreground hidden sm:block">{session.user?.email}</span>
+                    <button onClick={() => signOut()} className="btn-secondary text-sm px-3 py-2 sm:px-4">Sign out</button>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-sm text-muted-foreground hidden sm:block">Free Plan</span>
+                    <button onClick={() => signIn()} className="btn-secondary text-sm px-3 py-2 sm:px-4">Sign in</button>
+                    <Link 
+                      href="/upgrade"
+                      className="btn-secondary text-sm px-3 py-2 sm:px-4"
+                    >
+                      Upgrade
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -204,13 +235,23 @@ export default function Home() {
             </div>
             <div className="flex items-center space-x-3 sm:space-x-4">
               <ThemeToggle />
-              <span className="text-sm text-muted-foreground hidden sm:block">Free Plan</span>
-              <Link 
-                href="/upgrade"
-                className="btn-secondary text-sm px-3 py-2 sm:px-4"
-              >
-                Upgrade
-              </Link>
+              {session ? (
+                <>
+                  <span className="text-sm text-muted-foreground hidden sm:block">{session.user?.email}</span>
+                  <button onClick={() => signOut()} className="btn-secondary text-sm px-3 py-2 sm:px-4">Sign out</button>
+                </>
+              ) : (
+                <>
+                  <span className="text-sm text-muted-foreground hidden sm:block">Free Plan</span>
+                  <button onClick={() => signIn()} className="btn-secondary text-sm px-3 py-2 sm:px-4">Sign in</button>
+                  <Link 
+                    href="/upgrade"
+                    className="btn-secondary text-sm px-3 py-2 sm:px-4"
+                  >
+                    Upgrade
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </div>

@@ -1,11 +1,34 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { Check, Star, Zap, Clock, Shield, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function UpgradePage() {
+  const { data: session } = useSession();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [loading, setLoading] = useState(false);
+
+  const handleUpgradeClick = async () => {
+    if (!session) {
+      alert('Please sign in to upgrade.');
+      return;
+    }
+
+    setLoading(true);
+    const res = await fetch('/api/stripe/create-checkout-session', {
+      method: 'POST',
+    });
+
+    if (res.ok) {
+      const { url } = await res.json();
+      window.location.href = url;
+    } else {
+      alert('Error creating checkout session. Please try again.');
+      setLoading(false);
+    }
+  };
 
   const tiers = [
     {
@@ -188,6 +211,8 @@ export default function UpgradePage() {
 
                   {/* CTA Button */}
                   <button
+                    onClick={handleUpgradeClick}
+                    disabled={loading}
                     className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${
                       tier.popular
                         ? 'bg-primary text-primary-foreground hover:bg-primary/90'
@@ -196,7 +221,7 @@ export default function UpgradePage() {
                         : 'bg-foreground text-background hover:bg-foreground/90'
                     }`}
                   >
-                    {tier.cta}
+                    {loading ? 'Redirecting...' : tier.cta}
                   </button>
                 </div>
 
