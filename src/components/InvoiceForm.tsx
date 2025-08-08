@@ -450,7 +450,7 @@ export default function InvoiceForm({ invoice, onUpdate, onNext }: InvoiceFormPr
 
       {/* Rate Application Prompt */}
       {showRatePrompt && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-foreground/40 z-50 flex items-center justify-center p-4">
           <div className="bg-card rounded-xl p-6 max-w-sm w-full animate-fadeIn border border-border">
             <div className="text-center">
               <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
