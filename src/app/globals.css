@@ -150,7 +150,7 @@
   }
 
   .progress-fill {
-    @apply h-full bg-blue-600 transition-all duration-500 ease-out;
+    @apply h-full bg-primary transition-all duration-500 ease-out;
   }
 
   /* Mobile grid layouts */
@@ -186,7 +186,9 @@
 
   /* Mobile upload areas */
   .upload-area-mobile {
-    @apply border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-muted-foreground transition-colors cursor-pointer;
+
+    @apply border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-border/80 transition-colors cursor-pointer;
+main
   }
 
   /* Mobile animations */
