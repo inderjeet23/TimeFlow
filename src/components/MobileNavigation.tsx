@@ -27,11 +27,13 @@ export default function MobileNavigation({ currentStep, onStepChange }: MobileNa
     return 'upcoming';
   };
 
+  const stepNumber = steps.findIndex(s => s.id === currentStep) + 1;
+
   return (
     <div className="lg:hidden">
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-card border-b border-border shadow-sm">
-        <div className="flex items-center justify-between px-4 py-3">
+        <div className="flex items-center justify-between px-4 py-2">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -55,39 +57,12 @@ export default function MobileNavigation({ currentStep, onStepChange }: MobileNa
           </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="px-4 pb-3">
-          <div className="relative h-2 bg-muted rounded-full overflow-hidden">
-            <div 
-              className={`absolute top-0 left-0 h-full bg-primary transition-all duration-500 ${
-                currentStep === 'upload' ? 'w-0' : 
-                currentStep === 'configure' ? 'w-1/2' : 'w-full'
-              }`}
-            />
-          </div>
-          <div className="flex justify-between mt-2">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex flex-col items-center">
-                <div 
-                  className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium ${
-                    getStepStatus(step.id) === 'completed' 
-                      ? 'bg-green-500 text-white' 
-                      : getStepStatus(step.id) === 'current'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  {getStepStatus(step.id) === 'completed' ? (
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    index + 1
-                  )}
-                </div>
-                <span className="text-xs text-muted-foreground mt-1 hidden sm:block">{step.label}</span>
-              </div>
-            ))}
+        {/* Step pill (unified style) */}
+        <div className="px-4 pb-2">
+          <div className="flex justify-center">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-foreground">
+              Step {stepNumber} of 3
+            </span>
           </div>
         </div>
       </div>

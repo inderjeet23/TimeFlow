@@ -148,14 +148,42 @@ export default function Home() {
           onCSVUpload={handleCSVUpload}
         />
         
-        {/* Desktop Input Method Selector */}
+        {/* Desktop Header (adds dark mode toggle on web) */}
+        <header className="bg-card border-b border-border shadow-sm hidden lg:block">
+          <div className="container-mobile">
+            <div className="flex justify-between items-center py-4 sm:py-6">
+              <div className="flex items-center cursor-pointer touch-target" onClick={() => setStep('upload')}>
+                <Clock className="h-8 w-8 text-primary mr-3" />
+                <h1 className="text-xl sm:text-2xl font-bold text-foreground">TimeFlow</h1>
+              </div>
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <ThemeToggle />
+                <span className="text-sm text-muted-foreground hidden sm:block">Free Plan</span>
+                <Link 
+                  href="/upgrade"
+                  className="btn-secondary text-sm px-3 py-2 sm:px-4"
+                >
+                  Upgrade
+                </Link>
+              </div>
+            </div>
+          </div>
+        </header>
+        
+        {/* Desktop Step 1 content */}
         <div className="hidden lg:block">
-          <div className="container-mobile py-6 sm:py-8 lg:pt-8">
+          <main className="container-mobile py-8 lg:pt-10">
+            <div className="text-center mb-6">
+              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                Step 1 of 3
+              </span>
+              <h2 className="text-2xl font-bold text-foreground mt-3">Choose Your Input Method</h2>
+            </div>
             <InputMethodSelector 
               onTimeEntriesComplete={handleTimeEntriesComplete}
               onCSVUpload={handleCSVUpload}
             />
-          </div>
+          </main>
         </div>
       </div>
     );
@@ -190,90 +218,13 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container-mobile py-6 sm:py-8 lg:pt-8">
-        {/* Desktop Progress Steps */}
+        {/* Desktop Step Pill (unified with mobile) */}
         <div className="mb-6 sm:mb-8 hidden lg:block">
-          <div className="max-w-2xl mx-auto">
-            <div className="flex items-center justify-between relative">
-              {/* Progress Line */}
-              <div className="absolute top-5 left-0 right-0 h-0.5 bg-border -z-10"></div>
-              <div 
-                className={`absolute top-5 left-0 h-0.5 bg-primary transition-all duration-500 -z-10 ${
-                  step === 'configure' ? 'w-1/2' : 'w-full'
-                }`}
-              ></div>
-              
-              {/* Step 1 */}
-              <div className="nav-step">
-                <div 
-                  className={`nav-step-icon ${
-                    step === 'configure' || step === 'preview'
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'bg-card border-border text-muted-foreground'
-                  }`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                </div>
-                <span className="text-sm font-medium mt-2 text-muted-foreground">
-                  Add Time Data
-                </span>
-              </div>
-
-              {/* Step 2 */}
-              <div className="nav-step">
-                <div 
-                  className={`nav-step-icon ${
-                    step === 'configure' 
-                      ? 'bg-primary border-primary text-primary-foreground' 
-                      : step === 'preview'
-                      ? 'bg-green-500 border-green-500 text-white'
-                      : 'bg-card border-border text-muted-foreground'
-                  }`}
-                >
-                  {step === 'configure' ? (
-                    <Settings className="h-5 w-5" />
-                  ) : step === 'preview' ? (
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  ) : (
-                    <Settings className="h-5 w-5" />
-                  )}
-                </div>
-                <span className={`text-sm font-medium mt-2 ${
-                  step === 'configure' ? 'text-primary' : 
-                  step === 'preview' ? 'text-muted-foreground' : 'text-muted-foreground'
-                }`}>
-                  Configure
-                </span>
-              </div>
-
-              {/* Step 3 */}
-              <div className="nav-step">
-                <div 
-                  className={`nav-step-icon ${
-                    step === 'preview' 
-                      ? 'bg-primary border-primary text-primary-foreground' 
-                      : 'bg-card border-border text-muted-foreground'
-                  }`}
-                >
-                  {step === 'preview' ? (
-                    <FileText className="h-5 w-5" />
-                  ) : (
-                    <FileText className="h-5 w-5" />
-                  )}
-                </div>
-                <span className={`text-sm font-medium mt-2 ${
-                  step === 'preview' ? 'text-primary' : 'text-muted-foreground'
-                }`}>
-                  Preview & Download
-                </span>
-              </div>
-            </div>
-            
-            {/* Step Description */}
-            <div className="text-center mt-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-muted text-foreground">
+              {step === 'configure' ? 'Step 2 of 3' : 'Step 3 of 3'}
+            </span>
+            <div className="mt-3">
               <p className="text-sm text-muted-foreground">
                 {step === 'configure' && 'Configure your invoice details and rates'}
                 {step === 'preview' && 'Preview and download your professional invoice'}

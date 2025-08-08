@@ -84,48 +84,22 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
 
   return (
     <div className="min-h-screen bg-background lg:hidden">
-      {/* Header */}
-      <div className="bg-card border-b border-border px-4 py-6">
-        {/* Stepper Dots */}
-        <div className="flex justify-center mb-6">
-          <div className="flex space-x-2">
-            <div className="w-3 h-3 bg-primary rounded-full"></div>
-            <div className="w-3 h-3 bg-muted rounded-full"></div>
-            <div className="w-3 h-3 bg-muted rounded-full"></div>
-          </div>
-        </div>
-
-        {/* Page Title with Value Proposition */}
+      {/* Header (condensed for above-the-fold content) */}
+      <div className="bg-card border-b border-border px-4 py-3">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-foreground mb-3">
-            How do you want to add time?
+          <h1 className="text-xl font-semibold text-foreground">
+            Choose Your Input Method
           </h1>
-          <p className="text-base text-muted-foreground mb-4">
-            Generate professional invoices from your time logs in minutes—no manual math, no hassle.
+          <p className="text-sm text-muted-foreground mt-1">
+            Generate invoices from time logs — fast.
           </p>
-          
-          {/* Benefits Summary */}
-          <div className="flex flex-wrap justify-center gap-4 mb-4">
-            <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-              <Upload className="h-3 w-3 text-primary" />
-              <span>Easy imports</span>
-            </div>
-            <div className="flex items-center space-x-1 text-xs text-muted-foreground">
-              <Zap className="h-3 w-3 text-primary" />
-              <span>Fast setup</span>
-            </div>
-            <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-              <Calculator className="h-3 w-3 text-primary" />
-              <span>Smart calculations</span>
-            </div>
-          </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="px-4 py-6 space-y-6">
+      <div className="px-4 py-4 space-y-4">
         {/* Option Cards */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {/* CSV Upload Card - Power Users */}
           <div 
             className={`rounded-xl border p-6 flex items-start gap-4 cursor-pointer transition-all duration-150 ${
@@ -156,10 +130,10 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
                   <span>Power Users</span>
                 </div>
               </div>
-              <p className="text-base text-muted-foreground mb-2">
+              <p className="text-sm text-muted-foreground mb-1">
                 Fast if you already track time
               </p>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="text-xs text-muted-foreground mb-3">
                 Works with Toggl, Clockify, Harvest.
               </p>
               
@@ -212,10 +186,10 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
                   <span>Quick Start</span>
                 </div>
               </div>
-              <p className="text-base text-muted-foreground mb-2">
+              <p className="text-sm text-muted-foreground mb-1">
                 Simple for a few entries
               </p>
-              <p className="text-sm text-muted-foreground mb-3">
+              <p className="text-xs text-muted-foreground mb-3">
                 Type in your time data directly.
               </p>
               
