@@ -92,7 +92,7 @@ export default function MobileNavigation({ currentStep, onStepChange }: MobileNa
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50">
+        <div className="fixed inset-0 z-50 bg-background/80">
           <div className="absolute top-0 left-0 w-80 h-full bg-card shadow-xl border border-border">
             <div className="p-4 border-b border-border">
               <div className="flex items-center justify-between">
