@@ -149,14 +149,14 @@ function SimpleThemeToggleContent() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg bg-card border border-border hover:bg-secondary/50 transition-all duration-200"
+      className="p-2 rounded-lg bg-card border border-border hover:bg-secondary/50 transition-all duration-200 touch-target"
       title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
     >
       <div className="relative w-4 h-4">
-        <Sun 
+        <Sun
           className={`absolute inset-0 w-4 h-4 text-foreground transition-all duration-300 ${
             theme === 'light' ? 'rotate-0 scale-100' : 'rotate-90 scale-0'
-          }`} 
+          }`}
         />
         <Moon 
           className={`absolute inset-0 w-4 h-4 text-foreground transition-all duration-300 ${
