@@ -351,7 +351,7 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
 
         {/* Compare Methods Bottom Sheet */}
         {showCompare && (
-          <div className="fixed inset-0 bg-black/50 z-50 flex items-end">
+          <div className="fixed inset-0 bg-background/80 z-50 flex items-end">
             <div className="bg-card rounded-t-xl w-full max-h-[60vh] overflow-hidden border border-border">
               <div className="p-4 border-b border-border">
                 <div className="flex items-center justify-between">
@@ -397,7 +397,7 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
 
         {/* Help Modal */}
         {showHelp && (
-          <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 bg-foreground/40 flex items-center justify-center p-4">
             <div className="bg-card rounded-xl border border-border shadow-xl max-w-md w-full max-h-[80vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
