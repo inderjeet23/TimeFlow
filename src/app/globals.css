@@ -188,7 +188,6 @@
   .upload-area-mobile {
 
     @apply border-2 border-dashed border-border rounded-xl p-6 text-center hover:border-border/80 transition-colors cursor-pointer;
-main
   }
 
   /* Mobile animations */
