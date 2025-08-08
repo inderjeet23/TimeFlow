@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Upload, Settings, FileText, Menu, X } from 'lucide-react';
+import { SimpleThemeToggle } from './ThemeToggle';
 
 interface MobileNavigationProps {
   currentStep: 'upload' | 'configure' | 'preview';
@@ -47,6 +48,7 @@ export default function MobileNavigation({ currentStep, onStepChange }: MobileNa
           </div>
           
           <div className="flex items-center space-x-2">
+            <SimpleThemeToggle />
             <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full">
               Free
             </span>
