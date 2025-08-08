@@ -33,7 +33,7 @@ export default function MobileNavigation({ currentStep, onStepChange }: MobileNa
     <div className="lg:hidden">
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-card border-b border-border shadow-sm">
-        <div className="flex items-center justify-between px-4 py-2">
+        <div className="flex items-center justify-between px-4 py-1.5">
           <div className="flex items-center space-x-3">
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -58,9 +58,9 @@ export default function MobileNavigation({ currentStep, onStepChange }: MobileNa
         </div>
 
         {/* Step pill (unified style) */}
-        <div className="px-4 pb-2">
+        <div className="px-4 pb-1.5">
           <div className="flex justify-center">
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-muted text-foreground">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-muted text-foreground">
               Step {stepNumber} of 3
             </span>
           </div>

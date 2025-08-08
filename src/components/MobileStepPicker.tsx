@@ -85,7 +85,7 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
   return (
     <div className="min-h-screen bg-background lg:hidden">
       {/* Header (condensed for above-the-fold content) */}
-      <div className="bg-card border-b border-border px-5 py-4">
+      <div className="bg-card border-b border-border px-4 py-3">
         <div className="text-center">
           <h1 className="text-xl font-semibold text-foreground">
             Choose Your Input Method
@@ -97,73 +97,73 @@ export default function MobileStepPicker({ onTimeEntriesComplete, onCSVUpload }:
       </div>
 
       {/* Main Content */}
-      <div className="px-5 py-5 space-y-5">
+      <div className="px-4 py-4 space-y-4">
         {/* Option Cards */}
         <div className="space-y-4">
           {/* CSV Upload Card - Power Users */}
           <div 
-            className={`rounded-2xl border p-6 flex flex-col items-center text-center gap-3 cursor-pointer transition-all duration-150 ${
+            className={`rounded-2xl border p-5 flex flex-col items-center text-center gap-2 cursor-pointer transition-all duration-150 ${
               selectedMethod === 'csv' 
                 ? 'border-primary ring-2 ring-primary/20 bg-primary/5' 
                 : 'border-border bg-card hover:border-border/80'
             }`}
             onClick={() => setSelectedMethod('csv')}
           >
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center ${
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
               selectedMethod === 'csv' ? 'bg-primary' : 'bg-muted'
             }`}>
               {selectedMethod === 'csv' ? (
-                <Check className="w-7 h-7 text-primary-foreground" />
+                <Check className="w-6 h-6 text-primary-foreground" />
               ) : (
-                <Upload className="w-7 h-7 text-muted-foreground" />
+                <Upload className="w-6 h-6 text-muted-foreground" />
               )}
             </div>
-            <h3 className="text-lg font-semibold text-foreground">Upload CSV file</h3>
-            <p className="text-sm text-muted-foreground">Fast if you already track time</p>
-            <p className="text-xs text-muted-foreground">Works with Toggl, Clockify, Harvest</p>
+            <h3 className="text-base font-semibold text-foreground">Upload CSV file</h3>
+            <p className="text-xs text-muted-foreground">Fast if you already track time</p>
+            <p className="text-[11px] text-muted-foreground">Works with Toggl, Clockify, Harvest</p>
             {/* Prominent CTA Button */}
-            <button className="inline-flex justify-center items-center w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-semibold text-base hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 shadow-md hover:shadow-lg">
+            <button className="inline-flex justify-center items-center w-full bg-primary text-primary-foreground py-3 px-4 rounded-lg font-semibold text-sm hover:bg-primary/90 active:bg-primary/80 transition-all duration-200 shadow-md hover:shadow-lg">
               Choose CSV Upload
               <ChevronDown className="w-4 h-4 ml-2" />
             </button>
           </div>
 
-          {/* Compare Methods Link - positioned between cards */}
-          <div className="text-center py-2">
-            <button
-              onClick={() => setShowCompare(!showCompare)}
-              className="text-primary text-sm hover:text-primary/80 transition-colors flex items-center justify-center mx-auto space-x-1"
-            >
-              <span>Not sure? Compare methods</span>
-              <ChevronDown className={`w-3 h-3 transition-transform ${showCompare ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
-
           {/* Manual Entry Card - Quick Start */}
           <div 
-            className={`rounded-2xl border p-6 flex flex-col items-center text-center gap-3 cursor-pointer transition-all duration-150 ${
+            className={`rounded-2xl border p-5 flex flex-col items-center text-center gap-2 cursor-pointer transition-all duration-150 ${
               selectedMethod === 'manual' 
                 ? 'border-green-500 ring-2 ring-green-500/20 bg-green-500/5' 
                 : 'border-border bg-card hover:border-border/80'
             }`}
             onClick={() => setSelectedMethod('manual')}
           >
-            <div className={`w-14 h-14 rounded-full flex items-center justify-center ${
+            <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
               selectedMethod === 'manual' ? 'bg-green-500' : 'bg-muted'
             }`}>
               {selectedMethod === 'manual' ? (
-                <Check className="w-7 h-7 text-white" />
+                <Check className="w-6 h-6 text-white" />
               ) : (
-                <Edit3 className="w-7 h-7 text-muted-foreground" />
+                <Edit3 className="w-6 h-6 text-muted-foreground" />
               )}
             </div>
-            <h3 className="text-lg font-semibold text-foreground">Manual entry</h3>
-            <p className="text-sm text-muted-foreground">Simple for a few entries</p>
-            <p className="text-xs text-muted-foreground">Type in your time data directly</p>
+            <h3 className="text-base font-semibold text-foreground">Manual entry</h3>
+            <p className="text-xs text-muted-foreground">Simple for a few entries</p>
+            <p className="text-[11px] text-muted-foreground">Type in your time data directly</p>
             {/* Prominent CTA Button */}
-            <button className="inline-flex justify-center items-center w-full bg-green-500 text-white py-3 px-4 rounded-lg font-semibold text-base hover:bg-green-600 active:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg">
+            <button className="inline-flex justify-center items-center w-full bg-green-500 text-white py-3 px-4 rounded-lg font-semibold text-sm hover:bg-green-600 active:bg-green-700 transition-all duration-200 shadow-md hover:shadow-lg">
               Choose Manual Entry
               <ChevronDown className="w-4 h-4 ml-2" />
+            </button>
+          </div>
+
+          {/* Compare Methods Link - moved below the options to avoid pushing content */}
+          <div className="text-center pt-1">
+            <button
+              onClick={() => setShowCompare(!showCompare)}
+              className="text-primary text-sm hover:text-primary/80 transition-colors flex items-center justify-center mx-auto space-x-1"
+            >
+              <span>Not sure? Compare methods</span>
+              <ChevronDown className={`w-3 h-3 transition-transform ${showCompare ? 'rotate-180' : ''}`} />
             </button>
           </div>
         </div>
@@ -372,12 +372,12 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
         )}
       </div>
 
-      {/* Sticky CTA */}
-      <div className="fixed inset-x-0 bottom-0 p-4 bg-card/90 backdrop-blur supports-[backdrop-filter]:backdrop-blur border-t border-border lg:hidden" style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom))' }}>
+      {/* Sticky CTA (slimmer to keep more above the fold) */}
+      <div className="fixed inset-x-0 bottom-0 p-3 bg-card/90 backdrop-blur supports-[backdrop-filter]:backdrop-blur border-t border-border lg:hidden" style={{ paddingBottom: 'calc(0.75rem + env(safe-area-inset-bottom))' }}>
         <button
           onClick={handleContinue}
           disabled={!selectedMethod || (selectedMethod === 'csv' && !csvFile)}
-          className={`w-full h-14 rounded-lg font-semibold text-lg transition-all duration-200 ${
+          className={`w-full h-12 rounded-lg font-semibold text-base transition-all duration-200 ${
             selectedMethod && (selectedMethod !== 'csv' || csvFile)
               ? 'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5' 
               : 'bg-muted text-muted-foreground cursor-not-allowed'
@@ -391,7 +391,7 @@ Beta LLC,Mobile App,2024-01-17,4.0,Development,TRUE`;
       </div>
 
       {/* Bottom spacing for sticky CTA */}
-      <div className="h-20 lg:hidden"></div>
+      <div className="h-16 lg:hidden"></div>
     </div>
   );
 } 
